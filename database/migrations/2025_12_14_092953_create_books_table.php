@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string("title");
-            $table->text("description")->nullable();
-            $table->decimal("price", 8, 2);
-            $table->date("publication_year")->nullable();
-            $table->string("ISBN")->unique();
+            $table->decimal("price", 10, 3);
+            $table->date("publication_year");
+            $table->string("isbn")->unique();
+            $table->integer('category_id');
             $table->timestamps();
         });
     }

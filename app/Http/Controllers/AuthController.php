@@ -28,7 +28,38 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'type' => 'bearer',
-            995593
+        ]);
+    }
+    public function register(Request $request)
+    {
+        $inputs = $request->validate([
+            'username' => ['required', 'string', 'min:4', 'max:250'],
+            'password' => ['required', 'min:8'],
+        ]);
+
+        $user = User::create([
+            'username' => $request->username,
+            'password' => $request->password,
+        ]);
+
+        return response()->json([
+            'message' => 'Creaet account Successful',
+            'user' => $user
+        ]);
+    }
+
+
+
+    public function logout(Request $request)
+    {
+        $user = auth()->user();
+
+        if ($user && $user->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'message' => 'logout account Successful'
         ]);
     }
 }
