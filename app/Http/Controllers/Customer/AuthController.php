@@ -8,26 +8,63 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    /**
+     * Register a new customer
+     */
     public function signup(Request $request)
     {
-        $inputs = $request->validate([
-            //user
-            'name' => ['required'],
-            'username' => ['required', 'unique:users'],
-            'password' => ['required'],
-            // customer
-            'phone_number' => ['required'],
-            'address' => ['required'],
-            'email' => ['required', 'email']
+        // Validate the input data
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:250', 'unique:users,username'],
+            'password' => ['required', 'string', 'min:8'],
+            'phone_number' => 'required',
+            'address' => 'required',
+            'email' => ['required', 'email'],
         ]);
-        $inputs['type'] = 'customer';
 
-        //TODO:: make db transaction
-        $user = User::create($inputs);
-        $user->customer()->create($inputs);
+        // Set user type as customer
+        $data['type'] = 'customer';
 
+        // Create the user and customer records
+        // TODO: Wrap in DB transaction for safety
+        $user = User::create($data);
+        $user->customer()->create($data);
+
+        // Return success response
         return response()->json([
-            'message' => 'you sign up '
+            'message' => 'You have signed up successfully!'
         ], 201);
+    }
+
+    /**
+     * Update customer profile
+     */
+    public function editProfile(Request $request)
+    {
+        // Get the current user and their customer profile
+        $user = $request->user();
+        $customer = $user->customer;
+
+        // Validate the input
+        $data = $request->validate([
+            'phone_number' => ['sometimes', 'string', 'max:255'],
+            'email' => ['sometimes', 'string', 'max:250','unique:customers,email,'] . $customer->id,
+            'address' => ['sometimes', 'string', 'min:8'],
+        ]);
+
+        // Update the customer profile
+        $customer->fill($data);
+        $customer->save();
+
+        // Return success response with updated data
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'customer' => [
+                'phone_number' => $customer->phone_number,
+                'email' => $customer->email,
+                'address' => $customer->address,
+            ]
+        ]);
     }
 }

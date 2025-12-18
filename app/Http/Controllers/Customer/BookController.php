@@ -15,19 +15,12 @@ class BookController extends Controller
     {
         $booksQuery = Book::query();
 
-        if ($request->has('cat')) {
-            $booksQuery->where('category_id', $request->cat);
+        if($request->has('cat'))
+        {
+            $booksQuery->where('category_id',$request->cat);
         }
 
         return $booksQuery->get();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -35,22 +28,7 @@ class BookController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $book = Book::findOrFail($id);
+        return $book;
     }
 }

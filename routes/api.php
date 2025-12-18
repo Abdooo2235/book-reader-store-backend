@@ -34,7 +34,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->gr
 });
 
 
-Route::post('customer/sign-up', [Customer::class, 'signup']);
+Route::post('customer/sign-up', [CustomerAuthController::class, 'signup']);
 Route::prefix('customer')->middleware(['auth:sanctum', CustomerMiddleware::class])->group(function () {
     Route::apiResource('book', CustomerBookController::class)->only(['index', 'show']);
     Route::apiResource('category', CustomerCategoryController::class)->only('index');

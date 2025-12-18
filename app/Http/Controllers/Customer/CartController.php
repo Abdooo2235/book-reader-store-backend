@@ -21,6 +21,12 @@ class CartController extends Controller
     {
         $cart = Cart::where('user_id', Auth::id())->first();
 
+        if (!$cart) {
+            return response()->json([
+                'message' => "No cart found for the user."
+            ], 404);
+        }
+
         return new CartResource($cart);
     }
 
@@ -38,7 +44,6 @@ class CartController extends Controller
             'address' => $user->customer->address
         ]);
 
-
         $cartItem = CartItem::where('cart_id', $cart->id)->where('book_id', $book_id)->first();
 
         if ($cartItem) {
@@ -54,56 +59,79 @@ class CartController extends Controller
         }
 
         return response()->json([
-            'message' => 'item added'
-        ]);
+            'message' => 'Book added to cart successfully.',
+        ], 200);
     }
 
-    public function checkout() {
+    /**
+     * Decrease quantity of a cart item
+     */
+    public function decreaseQty($book_id)
+    {
         $user = Auth::user();
         $cart = Cart::where('user_id', $user->id)->first();
-        $total = $cart->totalCart();
-        $order = Order::create([
-            'customer_id'=> $cart->user_id,
-            'payment_method_id'=> $cart->payment_method_id,
-            'address'=> $cart->address,
-            'total'=> $total,
-            'status'=> 'pending'
-        ]);
 
-        foreach($cart->items as $item) {
+        if (!$cart) {
+            return response()->json([
+                'message' => 'Cart not found'
+            ], 404);
+        }
 
-            $order->items()->create([
-                'order_id'=> $order->id,
-                'book_id'=>
-                'quantity'=>
-                'price'=> $
+        $cartItem = CartItem::where('cart_id', $cart->id)
+            ->where('book_id', $book_id)
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json([
+                'message' => 'Item not found in cart'
+            ], 404);
+        }
+
+        if ($cartItem->qty <= 1) {
+            $cartItem->delete();
+            return response()->json([
+                'message' => 'Item removed from cart'
             ]);
         }
-    }
 
+        $cartItem->update([
+            'qty' => $cartItem->qty - 1
+        ]);
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return response()->json([
+            'message' => 'Quantity decreased',
+            'new_qty' => $cartItem->qty
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove item from cart completely
      */
-    public function destroy(string $id)
+    public function removeItem($book_id)
     {
-        //
+        $user = Auth::user();
+        $cart = Cart::where('user_id', $user->id)->first();
+
+        if (!$cart) {
+            return response()->json([
+                'message' => 'Cart not found'
+            ], 404);
+        }
+
+        $cartItem = CartItem::where('cart_id', $cart->id)
+            ->where('book_id', $book_id)
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json([
+                'message' => 'Item not found in cart'
+            ], 404);
+        }
+
+        $cartItem->delete();
+
+        return response()->json([
+            'message' => 'Item removed from cart successfully'
+        ]);
     }
 }

@@ -63,4 +63,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(book::class);
     }
+
+    public function approve()
+    {
+        $this->status = 'approve';
+        $this->save();
+    }
+
+    public function block()
+    {
+        $this->status = 'block';
+        $this->save();
+    }
 }

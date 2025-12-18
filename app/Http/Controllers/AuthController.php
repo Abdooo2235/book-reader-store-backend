@@ -19,7 +19,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($inputs['password'], $user->password)) {
             return response()->json([
-                'message' => 'The provided credentials are incorrect.'
+                'message' => 'The  provided credentials are incorrect.'
             ], 401);
         }
 
@@ -30,25 +30,6 @@ class AuthController extends Controller
             'type' => 'bearer',
         ]);
     }
-    public function register(Request $request)
-    {
-        $inputs = $request->validate([
-            'username' => ['required', 'string', 'min:4', 'max:250'],
-            'password' => ['required', 'min:8'],
-        ]);
-
-        $user = User::create([
-            'username' => $request->username,
-            'password' => $request->password,
-        ]);
-
-        return response()->json([
-            'message' => 'Creaet account Successful',
-            'user' => $user
-        ]);
-    }
-
-
 
     public function logout(Request $request)
     {
@@ -60,6 +41,41 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'logout account Successful'
+        ]);
+    }
+
+    public function editProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => ['sometimes','string','max:255'], 
+            'username' => ['sometimes','string','max:250','unique:users,username,' . $user->id],
+            'password' => ['sometimes','string','min:8'],
+        ]);
+
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+
+        if (isset($validated['username'])) {
+            $user->username = $validated['username'];
+        }
+
+        if (isset($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'type' => $user->type,
+            ]
         ]);
     }
 }
