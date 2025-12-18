@@ -15,6 +15,11 @@ class CustomerMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if($request->user()->status == 'block') {
+            return response()->json([
+                'message' => 'your account is blocked'
+            ], 401);
+        }
         if ($request->user()->type == 'customer') {
             return $next($request);
         }

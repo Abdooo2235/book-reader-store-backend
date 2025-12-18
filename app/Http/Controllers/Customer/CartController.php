@@ -63,6 +63,50 @@ class CartController extends Controller
         ], 200);
     }
 
+    public function checkout(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        $cart = Cart::where('user_id', $user_id)->first();
+
+        if (!$cart || $cart->items->count() == 0) {
+            return response()->json([
+                'message' => 'Cart is empty'
+            ], 400);
+        }
+
+        $request->validate([
+            'payment_method_id' => 'required|exists:payment_methods,id'
+        ]);
+
+        $total = $cart->totalCart();
+
+        $order = Order::create([
+            'user_id' => $user_id,
+            'payment_method_id' => $request->payment_method_id,
+            'address' => $cart->address,
+            'total' => $total,
+            'status' => 'pending',
+        ]);
+
+        foreach ($cart->items as $cartItem) {
+            $order->items()->create([
+                'book_id' => $cartItem->book_id,
+                'qty' => $cartItem->qty,
+                'price' => $cartItem->book->price,
+            ]);
+        }
+
+        $cart->items()->delete();
+
+        $cart->delete();
+
+        return response()->json([
+            'message' => 'Order placed successfully',
+            'order_id' => $order->id,
+            'total' => $total
+        ], 201);
+    }
+
     /**
      * Decrease quantity of a cart item
      */
