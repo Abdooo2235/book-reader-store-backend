@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customer;
+namespace App\Http\Controllers\Author;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -29,39 +29,5 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'you sign up '
         ], 201);
-    }
-    public function editProfile(Request $request)
-    {
-        $user = $request->user();
-        $customer = $user->customer;
-
-        $validated = $request->validate([
-            'phone_number' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|max:250|unique:users,username,' . $user->id,
-            'address' => 'sometimes|string|min:8',
-        ]);
-
-        if (isset($validated['phone_number'])) {
-            $customer->phone_number = $validated['phone_number'];
-        }
-
-        if (isset($validated['email'])) {
-            $customer->email = $validated['email'];
-        }
-
-        if (isset($validated['address'])) {
-            $customer->address = $validated['address'];
-        }
-
-        $customer->save();
-
-        return response()->json([
-            'message' => 'Profile updated successfully',
-            'customer' => [
-                'phone_number' => $customer->phone_number,
-                'email' => $customer->email,
-                'address' => $customer->address,
-            ]
-        ]);
     }
 }

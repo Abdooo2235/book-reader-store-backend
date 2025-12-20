@@ -26,12 +26,10 @@ class AuthController extends Controller
         // Set user type as customer
         $data['type'] = 'customer';
 
-        // Create the user and customer records
         // TODO: Wrap in DB transaction for safety
         $user = User::create($data);
         $user->customer()->create($data);
 
-        // Return success response
         return response()->json([
             'message' => 'You have signed up successfully!'
         ], 201);
@@ -47,17 +45,26 @@ class AuthController extends Controller
         $customer = $user->customer;
 
         // Validate the input
-        $data = $request->validate([
+        $validated = $request->validate([
             'phone_number' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'string', 'max:250','unique:customers,email,'] . $customer->id,
+            'email' => ['sometimes', 'string', 'max:250', 'unique:customers,email,'] . $customer->id,
             'address' => ['sometimes', 'string', 'min:8'],
         ]);
 
-        // Update the customer profile
-        $customer->fill($data);
+        if (isset($validated['phone_number'])) {
+            $customer->phone_number = $validated['phone_number'];
+        }
+
+        if (isset($validated['email'])) {
+            $customer->email = $validated['email'];
+        }
+
+        if (isset($validated['address'])) {
+            $customer->address = $validated['address'];
+        }
+
         $customer->save();
 
-        // Return success response with updated data
         return response()->json([
             'message' => 'Profile updated successfully',
             'customer' => [

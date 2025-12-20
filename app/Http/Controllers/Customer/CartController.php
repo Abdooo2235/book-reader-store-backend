@@ -75,11 +75,10 @@ class CartController extends Controller
         }
 
         $request->validate([
-            'payment_method_id' => 'required|exists:payment_methods,id'
+            'payment_method_id' => ['required', 'exists:payment_methods,id']
         ]);
 
         $total = $cart->totalCart();
-
         $order = Order::create([
             'user_id' => $user_id,
             'payment_method_id' => $request->payment_method_id,

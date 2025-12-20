@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use App\Models\PaymentMethods;
 class PaymentMethodeController extends Controller
@@ -12,7 +13,7 @@ class PaymentMethodeController extends Controller
      */
     public function index()
     {
-        $payments = PaymentMethods::all();
+        $payments = PaymentMethod::all();
         return $payments;
     }
 }

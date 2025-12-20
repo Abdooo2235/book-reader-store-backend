@@ -16,6 +16,10 @@ class OrderController extends Controller
     {
         $user_id = Auth::user()->id;
         $orders = Order::where('user_id', $user_id)->get();
-        return $orders;
+
+        return response()->json([
+            'orders' => $orders,
+            'message' => 'Orders found'
+        ], 200);
     }
 }
