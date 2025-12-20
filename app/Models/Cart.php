@@ -19,7 +19,7 @@ class Cart extends Model
 
     public function paymentMethod()
     {
-        return $this->belongsTo(PaymentMethods::class);
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     public function items()

@@ -40,7 +40,7 @@ class CartController extends Controller
         // if user not have a cart
         $cart = Cart::where('user_id', $user->id)->firstOrCreate([
             'user_id' => $user->id,
-            'payment_method_id' => PaymentMethods::first()->id,
+            'payment_method_id' => PaymentMethod::first()->id,
             'address' => $user->customer->address
         ]);
 
