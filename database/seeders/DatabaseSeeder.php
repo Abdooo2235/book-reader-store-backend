@@ -23,11 +23,11 @@ class DatabaseSeeder extends Seeder
             'type' => "admin",
             'password' => Hash::make('password'),
         ]);
-        
+
         User::create([
-            'username' => env('ADMIN_USERNAME'),
+            'username' => 'abdooo',
             'type' => "admin",
-            'password' => Hash::make(env('ADMIN_PASSWORD')),
+            'password' => Hash::make('12345678'),
         ]);
     }
 }
