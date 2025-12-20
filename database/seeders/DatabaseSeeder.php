@@ -19,10 +19,15 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::create([
-            'name' => 'admin',
             'username' => 'admin',
             'type' => "admin",
             'password' => Hash::make('password'),
+        ]);
+        
+        User::create([
+            'username' => env('ADMIN_USERNAME'),
+            'type' => "admin",
+            'password' => Hash::make(env('ADMIN_PASSWORD')),
         ]);
     }
 }
