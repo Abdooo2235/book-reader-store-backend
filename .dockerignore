@@ -1,14 +1,35 @@
-*
-!.env.example
-!app
-!bootstrap
-!config
-!database
-!public
-!resources
-!routes
-!storage
-!artisan
-!composer.json
-!composer.lock
-!Dockerfile
+# Git
+.git
+.gitignore
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Node modules (if any)
+node_modules
+
+# Testing
+tests
+phpunit.xml
+
+# Documentation
+*.md
+docs
+MD_files
+
+# Logs
+storage/logs/*
+
+# Cache (will be regenerated)
+bootstrap/cache/*
+
+# Vendor (will be installed via composer)
+vendor
