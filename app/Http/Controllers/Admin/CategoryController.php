@@ -4,69 +4,38 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        $categories = Category::all();
-        return $categories;
+        return response()->json(['success' => true, 'data' => Category::withCount('books')->orderBy('name')->get()]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $inputs = $request->validate([
-            'name' => ['required']
-        ]);
-
-        $category = Category::create($inputs);
-
-        return response()->json([
-            'message' => 'category created',
-            'category' => $category
-        ]);
+        $validated = $request->validate(['name' => 'required|string|max:100|unique:categories']);
+        return response()->json(['success' => true, 'message' => 'Category created.', 'data' => Category::create($validated)], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Category $category): JsonResponse
     {
-        $category = Category::findOrFail($id);
-        return $category;
+        return response()->json(['success' => true, 'data' => $category->loadCount('books')]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Category $category): JsonResponse
     {
-        $inputs = $request->validate([
-            'name' => ['required']
-        ]);
-
-        $category = Category::findOrFail($id);
-        $category->update($inputs);
-
-        return $category;
+        $validated = $request->validate(['name' => 'required|string|max:100|unique:categories,name,' . $category->id]);
+        $category->update($validated);
+        return response()->json(['success' => true, 'message' => 'Category updated.', 'data' => $category]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Category $category): JsonResponse
     {
-        $category = Category::findOrFail($id);
+        if ($category->books()->count() > 0) return response()->json(['success' => false, 'message' => 'Has books.'], 400);
         $category->delete();
-        return response()->json([
-            'message' => 'category deleted'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Category deleted.']);
     }
 }

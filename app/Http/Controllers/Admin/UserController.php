@@ -1,44 +1,27 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Models\User;
+
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        $users = User::where('type', '!=', 'admin')->get();
-        return $users;
+        $users = User::where('role', 'user')
+            ->withCount(['orders', 'reviews', 'submittedBooks'])
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->get('per_page', 15));
 
+        return response()->json(['success' => true, 'data' => $users]);
     }
 
-    public function block($user_id)
+    public function show(User $user): JsonResponse
     {
-        $user = User::where('type', '!=', 'admin')
-            ->where('id', $user_id)
-            ->firstOrFail();
-
-        $user->block();
-        $user->tokens()->delete();
-        return response()->json([
-            'message' => 'user blocked'
-        ]);
-    }
-
-    public function unblock($user_id)
-    {
-        $user = User::where('type', '!=', 'admin')
-            ->where('id', $user_id)
-            ->firstOrFail();
-
-        $user->approve();
-        return response()->json([
-            'message' => 'user unblocked'
-        ]);
+        $user->loadCount(['orders', 'reviews', 'submittedBooks', 'collections']);
+        return response()->json(['success' => true, 'data' => $user]);
     }
 }

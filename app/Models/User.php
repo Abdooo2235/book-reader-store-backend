@@ -2,77 +2,111 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use PharIo\Manifest\Author;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'username',
-        'password',
-        'type',
-        'status'
+    protected $fillable = ['name', 'email', 'password', 'role', 'avatar_path'];
 
-    ];
+    protected $hidden = ['password'];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'email_verified_at' => 'datetime',
         ];
     }
-    public function author()
+
+    protected static function booted(): void
     {
-        return $this->hasOne(Author::class);
+        static::created(function (User $user) {
+            $user->cart()->create([]);
+            foreach (['Reading', 'Already Read', 'Planning', 'Favorites'] as $name) {
+                $user->collections()->create(['name' => $name, 'is_default' => true]);
+            }
+            $user->preferences()->create([]);
+        });
     }
 
-    public function customer()
+    public function isAdmin(): bool
     {
-        return $this->hasOne(customer::class);
+        return $this->role === 'admin';
     }
 
-    public function books()
+    public function cart()
     {
-        return $this->belongsToMany(book::class);
+        return $this->hasOne(Cart::class);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
+    }
+    public function readingProgress()
+    {
+        return $this->hasMany(ReadingProgress::class);
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    public function preferences()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+    public function submittedBooks()
+    {
+        return $this->hasMany(Book::class, 'created_by');
     }
 
-    public function approve()
+    public function downloadedBookIds(): array
     {
-        $this->status = 'approve';
-        $this->save();
+        return OrderItem::whereIn('order_id', $this->orders()->pluck('id'))->pluck('book_id')->toArray();
     }
 
-    public function block()
+    public function hasOrderedBook(int $bookId): bool
     {
-        $this->status = 'block';
-        $this->save();
+        return in_array($bookId, $this->downloadedBookIds());
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar_path ? asset('storage/' . $this->avatar_path) : null;
+    }
+
+    public function getTotalBooksDownloadedAttribute(): int
+    {
+        return count($this->downloadedBookIds());
+    }
+    public function getBooksCurrentlyReadingAttribute(): int
+    {
+        return $this->readingProgress()->where('progress_percentage', '>', 0)->where('progress_percentage', '<', 100)->count();
+    }
+    public function getBooksCompletedAttribute(): int
+    {
+        return $this->readingProgress()->where('progress_percentage', '>=', 100)->count();
+    }
+    public function getReviewsWrittenAttribute(): int
+    {
+        return $this->reviews()->count();
+    }
+    public function getReadingStatsAttribute(): array
+    {
+        return [
+            'total_books_downloaded' => $this->total_books_downloaded,
+            'books_currently_reading' => $this->books_currently_reading,
+            'books_completed' => $this->books_completed,
+            'reviews_written' => $this->reviews_written,
+        ];
     }
 }

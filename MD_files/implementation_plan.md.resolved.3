@@ -1,0 +1,561 @@
+# Book Reader – Laravel Implementation Plan (FINAL)
+
+## ✅ Decisions Confirmed
+
+| Question | Answer |
+|----------|--------|
+| Database | **Fresh install** (clean start) |
+| User roles | **user, admin** (author = attribute) |
+| File storage | **Local** (`storage/app/books/`) |
+| Cover images | **Both** (upload + URL supported) |
+| Soft deletes | **Yes** (add `deleted_at`) |
+
+> [!NOTE]
+> **About PDF Cover Extraction**: Extracting covers from PDF automatically requires external libraries like `spatie/pdf-to-image` + ImageMagick, which adds complexity. For a university project, accepting cover upload is simpler. We can add auto-extraction as a future enhancement.
+
+---
+
+## Database Schema (Fresh)
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    users ||--o{ books : "submits"
+    users ||--|| carts : "has"
+    users ||--o{ orders : "places"
+    users ||--o{ collections : "owns"
+    users ||--o{ reading_progress : "tracks"
+    users ||--o{ reviews : "writes"
+    users ||--|| user_preferences : "has"
+    
+    books }o--|| categories : "belongs to"
+    books ||--o{ cart_items : "in"
+    books ||--o{ order_items : "ordered"
+    books ||--o{ collection_book : "organized"
+    books ||--o{ reading_progress : "progress"
+    books ||--o{ reviews : "has"
+    
+    carts ||--o{ cart_items : "contains"
+    orders ||--o{ order_items : "contains"
+    collections ||--o{ collection_book : "contains"
+
+    users {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        enum role "user/admin"
+        timestamp created_at
+        timestamp deleted_at
+    }
+
+    books {
+        bigint id PK
+        string title
+        string author
+        date release_date
+        text description
+        bigint category_id FK
+        string cover_image
+        enum cover_type "upload/url"
+        enum file_type "pdf/epub"
+        string file_url
+        int number_of_pages
+        enum status "pending/approved/rejected"
+        string rejection_reason
+        decimal average_rating
+        bigint created_by FK
+        timestamp created_at
+        timestamp deleted_at
+    }
+
+    categories {
+        bigint id PK
+        string name UK
+        timestamp created_at
+    }
+
+    carts {
+        bigint id PK
+        bigint user_id FK UK
+        timestamp created_at
+    }
+
+    cart_items {
+        bigint id PK
+        bigint cart_id FK
+        bigint book_id FK
+    }
+
+    orders {
+        bigint id PK
+        bigint user_id FK
+        int total_items
+        timestamp created_at
+    }
+
+    order_items {
+        bigint id PK
+        bigint order_id FK
+        bigint book_id FK
+    }
+
+    collections {
+        bigint id PK
+        bigint user_id FK
+        string name
+        boolean is_default
+        timestamp created_at
+    }
+
+    collection_book {
+        bigint id PK
+        bigint collection_id FK
+        bigint book_id FK
+    }
+
+    reading_progress {
+        bigint id PK
+        bigint user_id FK
+        bigint book_id FK
+        decimal progress_percentage
+        int last_page
+        timestamp updated_at
+    }
+
+    reviews {
+        bigint id PK
+        bigint user_id FK
+        bigint book_id FK
+        tinyint rating
+        text review_text
+        timestamp created_at
+    }
+
+    user_preferences {
+        bigint id PK
+        bigint user_id FK UK
+        enum theme "light/dark"
+        int font_size
+        timestamp created_at
+    }
+```
+
+---
+
+## Migrations (All New)
+
+### [NEW] [create_users_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000001_create_users_table.php)
+
+```php
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('email')->unique();
+    $table->string('password');
+    $table->enum('role', ['user', 'admin'])->default('user');
+    $table->timestamps();
+    $table->softDeletes();
+});
+```
+
+---
+
+### [NEW] [create_categories_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000002_create_categories_table.php)
+
+```php
+Schema::create('categories', function (Blueprint $table) {
+    $table->id();
+    $table->string('name', 100)->unique();
+    $table->timestamps();
+});
+```
+
+---
+
+### [NEW] [create_books_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000003_create_books_table.php)
+
+```php
+Schema::create('books', function (Blueprint $table) {
+    $table->id();
+    $table->string('title');
+    $table->string('author');
+    $table->date('release_date')->nullable();
+    $table->text('description')->nullable();
+    $table->foreignId('category_id')->constrained()->onDelete('cascade');
+    $table->string('cover_image')->nullable();
+    $table->enum('cover_type', ['upload', 'url'])->default('upload');
+    $table->enum('file_type', ['pdf', 'epub'])->default('pdf');
+    $table->string('file_url')->nullable();
+    $table->integer('number_of_pages')->default(0);
+    $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+    $table->string('rejection_reason')->nullable();
+    $table->decimal('average_rating', 3, 2)->default(0.00);
+    $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+    $table->timestamps();
+    $table->softDeletes();
+});
+```
+
+---
+
+### [NEW] [create_carts_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000004_create_carts_table.php)
+
+```php
+Schema::create('carts', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
+    $table->timestamps();
+});
+```
+
+---
+
+### [NEW] [create_cart_items_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000005_create_cart_items_table.php)
+
+```php
+Schema::create('cart_items', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('cart_id')->constrained()->onDelete('cascade');
+    $table->foreignId('book_id')->constrained()->onDelete('cascade');
+    $table->timestamps();
+    
+    $table->unique(['cart_id', 'book_id']);
+});
+```
+
+---
+
+### [NEW] [create_orders_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000006_create_orders_table.php)
+
+```php
+Schema::create('orders', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    $table->integer('total_items')->default(0);
+    $table->timestamps();
+});
+```
+
+---
+
+### [NEW] [create_order_items_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000007_create_order_items_table.php)
+
+```php
+Schema::create('order_items', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('order_id')->constrained()->onDelete('cascade');
+    $table->foreignId('book_id')->constrained()->onDelete('cascade');
+    $table->timestamps();
+});
+```
+
+---
+
+### [NEW] [create_collections_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000008_create_collections_table.php)
+
+```php
+Schema::create('collections', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    $table->string('name', 100);
+    $table->boolean('is_default')->default(false);
+    $table->timestamps();
+});
+```
+
+---
+
+### [NEW] [create_collection_book_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000009_create_collection_book_table.php)
+
+```php
+Schema::create('collection_book', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('collection_id')->constrained()->onDelete('cascade');
+    $table->foreignId('book_id')->constrained()->onDelete('cascade');
+    $table->timestamp('added_at')->useCurrent();
+    
+    $table->unique(['collection_id', 'book_id']);
+});
+```
+
+---
+
+### [NEW] [create_reading_progress_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000010_create_reading_progress_table.php)
+
+```php
+Schema::create('reading_progress', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    $table->foreignId('book_id')->constrained()->onDelete('cascade');
+    $table->decimal('progress_percentage', 5, 2)->default(0.00);
+    $table->integer('last_page')->default(0);
+    $table->timestamps();
+    
+    $table->unique(['user_id', 'book_id']);
+});
+```
+
+---
+
+### [NEW] [create_reviews_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000011_create_reviews_table.php)
+
+```php
+Schema::create('reviews', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    $table->foreignId('book_id')->constrained()->onDelete('cascade');
+    $table->tinyInteger('rating')->unsigned();
+    $table->text('review_text')->nullable();
+    $table->timestamps();
+    
+    $table->unique(['user_id', 'book_id']);
+});
+```
+
+---
+
+### [NEW] [create_user_preferences_table.php](file:///c:/Workspace_book_reader/book-store/database/migrations/2026_01_12_000012_create_user_preferences_table.php)
+
+```php
+Schema::create('user_preferences', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
+    $table->enum('theme', ['light', 'dark'])->default('light');
+    $table->integer('font_size')->default(16);
+    $table->timestamps();
+});
+```
+
+---
+
+## Models
+
+### [NEW] User.php
+
+```php
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    protected $fillable = ['name', 'email', 'password', 'role'];
+    protected $hidden = ['password'];
+    protected $casts = ['password' => 'hashed'];
+
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            // Create cart
+            $user->cart()->create([]);
+            
+            // Create 3 default collections
+            foreach (['Reading', 'Already Read', 'Planning'] as $name) {
+                $user->collections()->create(['name' => $name, 'is_default' => true]);
+            }
+            
+            // Create preferences
+            $user->preferences()->create([]);
+        });
+    }
+
+    public function cart() { return $this->hasOne(Cart::class); }
+    public function orders() { return $this->hasMany(Order::class); }
+    public function collections() { return $this->hasMany(Collection::class); }
+    public function readingProgress() { return $this->hasMany(ReadingProgress::class); }
+    public function reviews() { return $this->hasMany(Review::class); }
+    public function preferences() { return $this->hasOne(UserPreference::class); }
+    public function submittedBooks() { return $this->hasMany(Book::class, 'created_by'); }
+    
+    public function isAdmin(): bool { return $this->role === 'admin'; }
+    
+    public function downloadedBookIds(): array
+    {
+        return OrderItem::whereIn('order_id', $this->orders()->pluck('id'))
+                        ->pluck('book_id')
+                        ->toArray();
+    }
+}
+```
+
+---
+
+### [NEW] Book.php
+
+```php
+class Book extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'title', 'author', 'release_date', 'description', 'category_id',
+        'cover_image', 'cover_type', 'file_type', 'file_url',
+        'number_of_pages', 'status', 'rejection_reason', 'created_by'
+    ];
+
+    protected $casts = [
+        'release_date' => 'date',
+        'average_rating' => 'decimal:2',
+    ];
+
+    public function category() { return $this->belongsTo(Category::class); }
+    public function creator() { return $this->belongsTo(User::class, 'created_by'); }
+    public function reviews() { return $this->hasMany(Review::class); }
+
+    public function scopeApproved($q) { return $q->where('status', 'approved'); }
+    public function scopePending($q) { return $q->where('status', 'pending'); }
+    public function scopeRejected($q) { return $q->where('status', 'rejected'); }
+
+    public function approve(): void
+    {
+        $this->update(['status' => 'approved', 'rejection_reason' => null]);
+    }
+
+    public function reject(string $reason = null): void
+    {
+        $this->update(['status' => 'rejected', 'rejection_reason' => $reason]);
+    }
+
+    public function updateAverageRating(): void
+    {
+        $this->average_rating = $this->reviews()->avg('rating') ?? 0;
+        $this->save();
+    }
+    
+    public function getCoverUrlAttribute(): string
+    {
+        if ($this->cover_type === 'url') {
+            return $this->cover_image;
+        }
+        return asset('storage/' . $this->cover_image);
+    }
+}
+```
+
+---
+
+## File Structure
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── AuthController.php
+│   │   ├── BookController.php (public: list approved)
+│   │   ├── CategoryController.php (public: list)
+│   │   ├── User/
+│   │   │   ├── BookController.php (submit book)
+│   │   │   ├── MyBookController.php (user's submissions)
+│   │   │   ├── CartController.php
+│   │   │   ├── OrderController.php
+│   │   │   ├── LibraryController.php
+│   │   │   ├── CollectionController.php
+│   │   │   ├── ProgressController.php
+│   │   │   ├── ReviewController.php
+│   │   │   └── PreferenceController.php
+│   │   └── Admin/
+│   │       ├── BookController.php (approve/reject)
+│   │       ├── CategoryController.php
+│   │       ├── DashboardController.php
+│   │       └── UserController.php
+│   └── Middleware/
+│       ├── AdminMiddleware.php
+│       └── UserMiddleware.php
+├── Models/
+│   ├── User.php
+│   ├── Book.php
+│   ├── Category.php
+│   ├── Cart.php
+│   ├── CartItem.php
+│   ├── Order.php
+│   ├── OrderItem.php
+│   ├── Collection.php
+│   ├── ReadingProgress.php
+│   ├── Review.php
+│   └── UserPreference.php
+└── ...
+```
+
+---
+
+## API Routes
+
+```php
+// Public routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/books', [BookController::class, 'index']); // Approved only
+Route::get('/books/{book}', [BookController::class, 'show']);
+Route::get('/categories', [CategoryController::class, 'index']);
+
+// User routes
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
+    
+    // Book submission
+    Route::post('/books', [User\BookController::class, 'store']);
+    Route::get('/my-books', [User\MyBookController::class, 'index']);
+    Route::delete('/my-books/{book}', [User\MyBookController::class, 'destroy']);
+    
+    // Cart
+    Route::get('/cart', [User\CartController::class, 'index']);
+    Route::post('/cart/books/{book}', [User\CartController::class, 'add']);
+    Route::delete('/cart/books/{book}', [User\CartController::class, 'remove']);
+    Route::post('/cart/checkout', [User\CartController::class, 'checkout']);
+    
+    // Orders & Library
+    Route::get('/orders', [User\OrderController::class, 'index']);
+    Route::get('/library', [User\LibraryController::class, 'index']);
+    Route::get('/library/{book}/download', [User\LibraryController::class, 'download']);
+    
+    // Collections
+    Route::get('/collections', [User\CollectionController::class, 'index']);
+    Route::get('/collections/{collection}/books', [User\CollectionController::class, 'books']);
+    Route::post('/collections/{collection}/books', [User\CollectionController::class, 'addBook']);
+    Route::delete('/collections/{collection}/books/{book}', [User\CollectionController::class, 'removeBook']);
+    
+    // Progress & Reviews
+    Route::get('/progress', [User\ProgressController::class, 'index']);
+    Route::put('/progress/{book}', [User\ProgressController::class, 'update']);
+    Route::get('/books/{book}/reviews', [User\ReviewController::class, 'index']);
+    Route::post('/books/{book}/reviews', [User\ReviewController::class, 'store']);
+    Route::put('/reviews/{review}', [User\ReviewController::class, 'update']);
+    Route::delete('/reviews/{review}', [User\ReviewController::class, 'destroy']);
+    
+    // Preferences
+    Route::get('/preferences', [User\PreferenceController::class, 'show']);
+    Route::put('/preferences', [User\PreferenceController::class, 'update']);
+});
+
+// Admin routes
+Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+    Route::get('/stats', [Admin\DashboardController::class, 'stats']);
+    Route::get('/books', [Admin\BookController::class, 'index']);
+    Route::put('/books/{book}', [Admin\BookController::class, 'update']);
+    Route::delete('/books/{book}', [Admin\BookController::class, 'destroy']);
+    Route::put('/books/{book}/approve', [Admin\BookController::class, 'approve']);
+    Route::put('/books/{book}/reject', [Admin\BookController::class, 'reject']);
+    Route::apiResource('/categories', Admin\CategoryController::class);
+    Route::get('/users', [Admin\UserController::class, 'index']);
+});
+```
+
+---
+
+## Implementation Steps
+
+| Step | Task | Time |
+|------|------|------|
+| 1 | Delete old migrations, create new ones | 1 hour |
+| 2 | Run `php artisan migrate:fresh` | 5 min |
+| 3 | Create/update all models | 2 hours |
+| 4 | Create middleware (Admin, User) | 30 min |
+| 5 | Create AuthController | 1 hour |
+| 6 | Create User controllers | 3 hours |
+| 7 | Create Admin controllers | 2 hours |
+| 8 | Update routes | 30 min |
+| 9 | Create seeders | 30 min |
+| 10 | Test all endpoints | 2 hours |
+
+**Total: ~12 hours**
