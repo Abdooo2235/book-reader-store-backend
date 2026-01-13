@@ -5,30 +5,42 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminSeeder extends Seeder
 {
   public function run(): void
   {
-    // Create or update admin user (handles soft deletes if email exists)
-    $admin = User::withTrashed()->updateOrCreate(
-      ['email' => 'admin@bookreader.com'],
-      [
-        'name' => 'Admin',
-        'password' => Hash::make('password'),
-        'role' => 'admin',
-        'deleted_at' => null, // Restore if was soft deleted
-      ]
-    );
+    $email = 'admin@bookreader.com';
 
-    // Ensure relationships exist (since updateOrCreate might not trigger created event if updated)
-    if (!$admin->wasRecentlyCreated) {
-        $admin->cart()->firstOrCreate([]);
-        $admin->preferences()->firstOrCreate([]);
-        foreach (['Reading', 'Already Read', 'Planning', 'Favorites'] as $name) {
-            $admin->collections()->firstOrCreate(['name' => $name], ['is_default' => true]);
-        }
+    // Check if admin already exists (including soft deleted)
+    $existingAdmin = DB::table('users')
+      ->where('email', $email)
+      ->first();
+
+    if ($existingAdmin) {
+      // Admin exists - just update and restore if needed
+      DB::table('users')
+        ->where('email', $email)
+        ->update([
+          'name' => 'Admin',
+          'password' => Hash::make('password'),
+          'role' => 'admin',
+          'deleted_at' => null,
+          'updated_at' => now(),
+        ]);
+
+      echo "Admin user updated: admin@bookreader.com / password\n";
+      return;
     }
+
+    // Admin doesn't exist - create new
+    $admin = User::create([
+      'name' => 'Admin',
+      'email' => $email,
+      'password' => Hash::make('password'),
+      'role' => 'admin',
+    ]);
 
     echo "Admin user created: admin@bookreader.com / password\n";
   }
