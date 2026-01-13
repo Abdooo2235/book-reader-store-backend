@@ -10,11 +10,13 @@
 
 ### Base URL
 
+**Production:**
+
 ```
-http://book-store.test/api
+https://book-reader-store-backend.onrender.com/api
 ```
 
-> ⚠️ Replace with production URL when deploying
+> ⚠️ Note: Free tier may have ~50s cold start delay after inactivity
 
 ### Test Credentials
 
@@ -242,7 +244,7 @@ Authorization: Bearer {token}
 {
     "success": true,
     "data": {
-        "file_url": "http://book-store.test/storage/...",
+        "file_url": "https://book-reader-store-backend.onrender.com/storage/...",
         "file_type": "pdf",
         "title": "Flutter Guide",
         "number_of_pages": 250
@@ -551,7 +553,7 @@ Authorization: Bearer {token}
 
 ```dart
 final dio = Dio(BaseOptions(
-  baseUrl: 'http://book-store.test/api',
+  baseUrl: 'https://book-reader-store-backend.onrender.com/api',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
