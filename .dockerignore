@@ -1,0 +1,14 @@
+*
+!.env.example
+!app
+!bootstrap
+!config
+!database
+!public
+!resources
+!routes
+!storage
+!artisan
+!composer.json
+!composer.lock
+!Dockerfile
