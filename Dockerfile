@@ -50,6 +50,9 @@ RUN mkdir -p storage/framework/cache/data \
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
+# Copy PHP-FPM pool configuration
+COPY docker/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # Copy Supervisor configuration
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
