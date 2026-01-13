@@ -49,4 +49,4 @@ RUN mkdir -p storage/framework/cache/data \
 EXPOSE 8080
 
 # Start command - runs migrations, seeders, then starts server
-CMD ["/bin/sh", "-c", "php artisan config:clear && php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force && php artisan db:seed --class=CategorySeeder --force && php artisan serve --host=0.0.0.0 --port=$((${PORT:-8080}))"]
+CMD ["/bin/sh", "-c", "php artisan config:clear && php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force && php artisan db:seed --class=CategorySeeder --force && php artisan db:seed --class=BookSeeder --force && php artisan serve --host=0.0.0.0 --port=$((${PORT:-8080}))"]
