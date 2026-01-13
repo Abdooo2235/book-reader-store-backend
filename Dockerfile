@@ -48,5 +48,5 @@ RUN mkdir -p storage/framework/cache/data \
 # Expose port
 EXPOSE 8080
 
-# Start command - runs migrations, seeders, then starts server
-CMD ["/bin/sh", "-c", "php artisan config:clear && php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force && php artisan db:seed --class=CategorySeeder --force && php artisan db:seed --class=BookSeeder --force && php artisan serve --host=0.0.0.0 --port=$((${PORT:-8080}))"]
+# Start command - runs migrations, seeders, then starts PHP built-in server
+CMD ["/bin/sh", "-c", "php artisan config:clear && php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force && php artisan db:seed --class=CategorySeeder --force && php artisan db:seed --class=BookSeeder --force && php -S 0.0.0.0:${PORT:-8080} -t public"]

@@ -13,6 +13,36 @@
     {
       "key": "token",
       "value": ""
+    },
+    {
+      "key": "book_id",
+      "value": "1",
+      "description": "Dynamic book ID - change this value"
+    },
+    {
+      "key": "collection_id",
+      "value": "1",
+      "description": "Dynamic collection ID - change this value"
+    },
+    {
+      "key": "order_id",
+      "value": "1",
+      "description": "Dynamic order ID - change this value"
+    },
+    {
+      "key": "review_id",
+      "value": "1",
+      "description": "Dynamic review ID - change this value"
+    },
+    {
+      "key": "category_id",
+      "value": "1",
+      "description": "Dynamic category ID - change this value"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "description": "Dynamic user ID - change this value"
     }
   ],
   "item": [
@@ -33,7 +63,7 @@
                   "host": ["{{base_url}}"],
                   "path": ["books"],
                   "query": [
-                    {"key": "filter[category_id]", "value": "1", "disabled": true},
+                    {"key": "filter[category_id]", "value": "{{category_id}}", "disabled": true},
                     {"key": "filter[title]", "value": "flutter", "disabled": true},
                     {"key": "sort", "value": "-created_at", "disabled": true},
                     {"key": "include", "value": "category", "disabled": true},
@@ -47,7 +77,7 @@
               "request": {
                 "method": "GET",
                 "header": [{"key": "Accept", "value": "application/json"}],
-                "url": "{{base_url}}/books/1"
+                "url": "{{base_url}}/books/{{book_id}}"
               }
             },
             {
@@ -55,7 +85,7 @@
               "request": {
                 "method": "GET",
                 "header": [{"key": "Accept", "value": "application/json"}],
-                "url": "{{base_url}}/books/1/reviews"
+                "url": "{{base_url}}/books/{{book_id}}/reviews"
               }
             }
           ]
@@ -100,7 +130,7 @@
             {
               "listen": "test",
               "script": {
-                "exec": ["var json = pm.response.json();", "if(json.data && json.data.token) {", "    pm.collectionVariables.set('token', json.data.token);", "}"],
+                "exec": ["var json = pm.response.json();", "if(json.data && json.data.token) {", "    pm.collectionVariables.set('token', json.data.token);", "    console.log('Token saved!');", "}"],
                 "type": "text/javascript"
               }
             }
@@ -113,7 +143,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"admin@bookreader.com\",\n    \"password\": \"password\"\n}"
+              "raw": "{\n    \"email\": \"test123@gmail.com\",\n    \"password\": \"password\"\n}"
             },
             "url": "{{base_url}}/auth/login"
           }
@@ -266,7 +296,7 @@
                     {"key": "title", "value": "My New Book", "type": "text"},
                     {"key": "author", "value": "John Author", "type": "text"},
                     {"key": "description", "value": "Book description", "type": "text"},
-                    {"key": "category_id", "value": "1", "type": "text"},
+                    {"key": "category_id", "value": "{{category_id}}", "type": "text"},
                     {"key": "file_type", "value": "pdf", "type": "text"},
                     {"key": "number_of_pages", "value": "100", "type": "text"},
                     {"key": "book_file", "type": "file", "src": ""},
@@ -284,7 +314,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/my-books/1"
+                "url": "{{base_url}}/my-books/{{book_id}}"
               }
             }
           ]
@@ -311,7 +341,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/cart/books/1"
+                "url": "{{base_url}}/cart/books/{{book_id}}"
               }
             },
             {
@@ -322,7 +352,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/cart/books/1"
+                "url": "{{base_url}}/cart/books/{{book_id}}"
               }
             },
             {
@@ -360,7 +390,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/orders/1"
+                "url": "{{base_url}}/orders/{{order_id}}"
               }
             }
           ]
@@ -387,7 +417,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/library/1/download"
+                "url": "{{base_url}}/library/{{book_id}}/download"
               }
             }
           ]
@@ -414,7 +444,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/library/1/favorite"
+                "url": "{{base_url}}/library/{{book_id}}/favorite"
               }
             },
             {
@@ -425,7 +455,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/library/1/favorite"
+                "url": "{{base_url}}/library/{{book_id}}/favorite"
               }
             }
           ]
@@ -452,7 +482,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/collections/1/books"
+                "url": "{{base_url}}/collections/{{collection_id}}/books"
               }
             },
             {
@@ -466,9 +496,9 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"book_id\": 1\n}"
+                  "raw": "{\n    \"book_id\": {{book_id}}\n}"
                 },
-                "url": "{{base_url}}/collections/1/books"
+                "url": "{{base_url}}/collections/{{collection_id}}/books"
               }
             },
             {
@@ -479,7 +509,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/collections/1/books/1"
+                "url": "{{base_url}}/collections/{{collection_id}}/books/{{book_id}}"
               }
             }
           ]
@@ -506,7 +536,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/progress/1"
+                "url": "{{base_url}}/progress/{{book_id}}"
               }
             },
             {
@@ -522,7 +552,7 @@
                   "mode": "raw",
                   "raw": "{\n    \"last_page\": 50,\n    \"total_pages\": 100\n}"
                 },
-                "url": "{{base_url}}/progress/1"
+                "url": "{{base_url}}/progress/{{book_id}}"
               }
             }
           ]
@@ -543,7 +573,7 @@
                   "mode": "raw",
                   "raw": "{\n    \"rating\": 5,\n    \"review_text\": \"Great book!\"\n}"
                 },
-                "url": "{{base_url}}/books/1/reviews"
+                "url": "{{base_url}}/books/{{book_id}}/reviews"
               }
             },
             {
@@ -559,7 +589,7 @@
                   "mode": "raw",
                   "raw": "{\n    \"rating\": 4,\n    \"review_text\": \"Updated review\"\n}"
                 },
-                "url": "{{base_url}}/reviews/1"
+                "url": "{{base_url}}/reviews/{{review_id}}"
               }
             },
             {
@@ -570,7 +600,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/reviews/1"
+                "url": "{{base_url}}/reviews/{{review_id}}"
               }
             }
           ]
@@ -651,7 +681,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/admin/books/1"
+                "url": "{{base_url}}/admin/books/{{book_id}}"
               }
             },
             {
@@ -667,7 +697,7 @@
                   "mode": "raw",
                   "raw": "{\n    \"title\": \"Updated Title\"\n}"
                 },
-                "url": "{{base_url}}/admin/books/1"
+                "url": "{{base_url}}/admin/books/{{book_id}}"
               }
             },
             {
@@ -678,7 +708,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/admin/books/1/approve"
+                "url": "{{base_url}}/admin/books/{{book_id}}/approve"
               }
             },
             {
@@ -694,7 +724,7 @@
                   "mode": "raw",
                   "raw": "{\n    \"rejection_reason\": \"Content not appropriate\"\n}"
                 },
-                "url": "{{base_url}}/admin/books/1/reject"
+                "url": "{{base_url}}/admin/books/{{book_id}}/reject"
               }
             },
             {
@@ -705,7 +735,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/admin/books/1"
+                "url": "{{base_url}}/admin/books/{{book_id}}"
               }
             }
           ]
@@ -753,7 +783,7 @@
                   "mode": "raw",
                   "raw": "{\n    \"name\": \"Updated Category\"\n}"
                 },
-                "url": "{{base_url}}/admin/categories/1"
+                "url": "{{base_url}}/admin/categories/{{category_id}}"
               }
             },
             {
@@ -764,7 +794,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/admin/categories/1"
+                "url": "{{base_url}}/admin/categories/{{category_id}}"
               }
             }
           ]
@@ -791,7 +821,7 @@
                   {"key": "Accept", "value": "application/json"},
                   {"key": "Authorization", "value": "Bearer {{token}}"}
                 ],
-                "url": "{{base_url}}/admin/users/1"
+                "url": "{{base_url}}/admin/users/{{user_id}}"
               }
             }
           ]
