@@ -1,75 +1,34 @@
 {
   "info": {
-    "_postman_id": "book-reader-api-v2",
+    "_postman_id": "book-reader-api-v3",
     "name": "📚 Book Reader API",
-    "description": "Free Book Store & Reader Platform API - Organized by User Role",
+    "description": "Free Book Store & Reader Platform API - IDs auto-saved from API responses",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {
-      "key": "base_url",
-      "value": "https://book-reader-store-backend.onrender.com/api"
-    },
-    {
-      "key": "token",
-      "value": ""
-    },
-    {
-      "key": "book_id",
-      "value": "1",
-      "description": "Dynamic book ID - change this value"
-    },
-    {
-      "key": "collection_id",
-      "value": "1",
-      "description": "Dynamic collection ID - change this value"
-    },
-    {
-      "key": "order_id",
-      "value": "1",
-      "description": "Dynamic order ID - change this value"
-    },
-    {
-      "key": "review_id",
-      "value": "1",
-      "description": "Dynamic review ID - change this value"
-    },
-    {
-      "key": "category_id",
-      "value": "1",
-      "description": "Dynamic category ID - change this value"
-    },
-    {
-      "key": "user_id",
-      "value": "1",
-      "description": "Dynamic user ID - change this value"
-    }
+    {"key": "base_url", "value": "https://book-reader-store-backend.onrender.com/api"},
+    {"key": "token", "value": ""},
+    {"key": "book_id", "value": ""},
+    {"key": "collection_id", "value": ""},
+    {"key": "order_id", "value": ""},
+    {"key": "review_id", "value": ""},
+    {"key": "category_id", "value": ""},
+    {"key": "user_id", "value": ""}
   ],
   "item": [
     {
       "name": "🔓 Public",
-      "description": "Endpoints that don't require authentication",
       "item": [
         {
           "name": "Books",
           "item": [
             {
               "name": "List Approved Books",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.data && json.data.data.length > 0) {", "    pm.collectionVariables.set('book_id', json.data.data[0].id);", "    console.log('✅ book_id saved: ' + json.data.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
                 "header": [{"key": "Accept", "value": "application/json"}],
-                "url": {
-                  "raw": "{{base_url}}/books",
-                  "host": ["{{base_url}}"],
-                  "path": ["books"],
-                  "query": [
-                    {"key": "filter[category_id]", "value": "{{category_id}}", "disabled": true},
-                    {"key": "filter[title]", "value": "flutter", "disabled": true},
-                    {"key": "sort", "value": "-created_at", "disabled": true},
-                    {"key": "include", "value": "category", "disabled": true},
-                    {"key": "per_page", "value": "15", "disabled": true}
-                  ]
-                }
+                "url": "{{base_url}}/books"
               }
             },
             {
@@ -95,6 +54,7 @@
           "item": [
             {
               "name": "List Categories",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.length > 0) {", "    pm.collectionVariables.set('category_id', json.data[0].id);", "    console.log('✅ category_id saved: ' + json.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
                 "header": [{"key": "Accept", "value": "application/json"}],
@@ -107,44 +67,24 @@
     },
     {
       "name": "🔐 Authentication",
-      "description": "Login, Register, and Token Management",
       "item": [
         {
           "name": "Register",
+          "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.token) {", "    pm.collectionVariables.set('token', json.data.token);", "    pm.collectionVariables.set('user_id', json.data.user.id);", "    console.log('✅ Token and user_id saved!');", "}"], "type": "text/javascript"}}],
           "request": {
             "method": "POST",
-            "header": [
-              {"key": "Accept", "value": "application/json"},
-              {"key": "Content-Type", "value": "application/json"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}"
-            },
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}"},
             "url": "{{base_url}}/auth/register"
           }
         },
         {
           "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": ["var json = pm.response.json();", "if(json.data && json.data.token) {", "    pm.collectionVariables.set('token', json.data.token);", "    console.log('Token saved!');", "}"],
-                "type": "text/javascript"
-              }
-            }
-          ],
+          "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.token) {", "    pm.collectionVariables.set('token', json.data.token);", "    pm.collectionVariables.set('user_id', json.data.user.id);", "    console.log('✅ Token and user_id saved!');", "}"], "type": "text/javascript"}}],
           "request": {
             "method": "POST",
-            "header": [
-              {"key": "Accept", "value": "application/json"},
-              {"key": "Content-Type", "value": "application/json"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"test123@gmail.com\",\n    \"password\": \"password\"\n}"
-            },
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"email\": \"test123@gmail.com\",\n    \"password\": \"password\"\n}"},
             "url": "{{base_url}}/auth/login"
           }
         },
@@ -152,10 +92,7 @@
           "name": "Get Current User",
           "request": {
             "method": "GET",
-            "header": [
-              {"key": "Accept", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{token}}"}
-            ],
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{base_url}}/auth/user"
           }
         },
@@ -163,10 +100,7 @@
           "name": "Logout",
           "request": {
             "method": "POST",
-            "header": [
-              {"key": "Accept", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{token}}"}
-            ],
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{base_url}}/auth/logout"
           }
         }
@@ -174,7 +108,6 @@
     },
     {
       "name": "👤 User",
-      "description": "Authenticated user endpoints",
       "item": [
         {
           "name": "Profile",
@@ -183,10 +116,7 @@
               "name": "Get Profile",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/profile"
               }
             },
@@ -194,15 +124,8 @@
               "name": "Update Profile",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"name\": \"Updated Name\"\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"name\": \"Updated Name\"\n}"},
                 "url": "{{base_url}}/profile"
               }
             },
@@ -210,16 +133,8 @@
               "name": "Upload Avatar",
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {"key": "avatar", "type": "file", "src": ""}
-                  ]
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "formdata", "formdata": [{"key": "avatar", "type": "file", "src": ""}]},
                 "url": "{{base_url}}/profile/avatar"
               }
             },
@@ -227,10 +142,7 @@
               "name": "Delete Avatar",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/profile/avatar"
               }
             }
@@ -243,10 +155,7 @@
               "name": "Get Preferences",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/preferences"
               }
             },
@@ -254,15 +163,8 @@
               "name": "Update Preferences",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"theme\": \"dark\",\n    \"font_size\": 18\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"theme\": \"dark\",\n    \"font_size\": 18\n}"},
                 "url": "{{base_url}}/preferences"
               }
             }
@@ -275,10 +177,7 @@
               "name": "List My Submissions",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/my-books"
               }
             },
@@ -286,23 +185,8 @@
               "name": "Submit New Book",
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {"key": "title", "value": "My New Book", "type": "text"},
-                    {"key": "author", "value": "John Author", "type": "text"},
-                    {"key": "description", "value": "Book description", "type": "text"},
-                    {"key": "category_id", "value": "{{category_id}}", "type": "text"},
-                    {"key": "file_type", "value": "pdf", "type": "text"},
-                    {"key": "number_of_pages", "value": "100", "type": "text"},
-                    {"key": "book_file", "type": "file", "src": ""},
-                    {"key": "cover_image", "type": "file", "src": ""}
-                  ]
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "formdata", "formdata": [{"key": "title", "value": "My New Book", "type": "text"}, {"key": "author", "value": "John Author", "type": "text"}, {"key": "description", "value": "Book description", "type": "text"}, {"key": "category_id", "value": "{{category_id}}", "type": "text"}, {"key": "file_type", "value": "pdf", "type": "text"}, {"key": "number_of_pages", "value": "100", "type": "text"}, {"key": "book_file", "type": "file", "src": ""}, {"key": "cover_image", "type": "file", "src": ""}]},
                 "url": "{{base_url}}/books"
               }
             },
@@ -310,10 +194,7 @@
               "name": "Delete Pending Book",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/my-books/{{book_id}}"
               }
             }
@@ -326,10 +207,7 @@
               "name": "View Cart",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/cart"
               }
             },
@@ -337,10 +215,7 @@
               "name": "Add Book to Cart",
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/cart/books/{{book_id}}"
               }
             },
@@ -348,21 +223,16 @@
               "name": "Remove Book from Cart",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/cart/books/{{book_id}}"
               }
             },
             {
               "name": "Checkout",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.id) {", "    pm.collectionVariables.set('order_id', json.data.id);", "    console.log('✅ order_id saved: ' + json.data.id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/cart/checkout"
               }
             }
@@ -373,12 +243,10 @@
           "item": [
             {
               "name": "List Orders",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.length > 0) {", "    pm.collectionVariables.set('order_id', json.data[0].id);", "    console.log('✅ order_id saved: ' + json.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/orders"
               }
             },
@@ -386,10 +254,7 @@
               "name": "Get Order Details",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/orders/{{order_id}}"
               }
             }
@@ -399,13 +264,11 @@
           "name": "Library",
           "item": [
             {
-              "name": "View Library (Downloaded Books)",
+              "name": "View Library",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.data && json.data.data.length > 0) {", "    pm.collectionVariables.set('book_id', json.data.data[0].id);", "    console.log('✅ book_id saved from library: ' + json.data.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/library"
               }
             },
@@ -413,10 +276,7 @@
               "name": "Download Book",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/library/{{book_id}}/download"
               }
             }
@@ -429,10 +289,7 @@
               "name": "Get All Favorites",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/favorites"
               }
             },
@@ -440,10 +297,7 @@
               "name": "Add to Favorites",
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/library/{{book_id}}/favorite"
               }
             },
@@ -451,10 +305,7 @@
               "name": "Remove from Favorites",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/library/{{book_id}}/favorite"
               }
             }
@@ -465,12 +316,10 @@
           "item": [
             {
               "name": "List Collections",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.length > 0) {", "    pm.collectionVariables.set('collection_id', json.data[0].id);", "    console.log('✅ collection_id saved: ' + json.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/collections"
               }
             },
@@ -478,10 +327,7 @@
               "name": "Get Collection Books",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/collections/{{collection_id}}/books"
               }
             },
@@ -489,15 +335,8 @@
               "name": "Add Book to Collection",
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"book_id\": {{book_id}}\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"book_id\": \"{{book_id}}\"\n}"},
                 "url": "{{base_url}}/collections/{{collection_id}}/books"
               }
             },
@@ -505,10 +344,7 @@
               "name": "Remove Book from Collection",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/collections/{{collection_id}}/books/{{book_id}}"
               }
             }
@@ -521,10 +357,7 @@
               "name": "List All Progress",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/progress"
               }
             },
@@ -532,10 +365,7 @@
               "name": "Get Book Progress",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/progress/{{book_id}}"
               }
             },
@@ -543,15 +373,8 @@
               "name": "Update Progress",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"last_page\": 50,\n    \"total_pages\": 100\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"last_page\": 50,\n    \"total_pages\": 100\n}"},
                 "url": "{{base_url}}/progress/{{book_id}}"
               }
             }
@@ -562,17 +385,11 @@
           "item": [
             {
               "name": "Create Review",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.id) {", "    pm.collectionVariables.set('review_id', json.data.id);", "    console.log('✅ review_id saved: ' + json.data.id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"rating\": 5,\n    \"review_text\": \"Great book!\"\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"rating\": 5,\n    \"review_text\": \"Great book!\"\n}"},
                 "url": "{{base_url}}/books/{{book_id}}/reviews"
               }
             },
@@ -580,15 +397,8 @@
               "name": "Update Review",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"rating\": 4,\n    \"review_text\": \"Updated review\"\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"rating\": 4,\n    \"review_text\": \"Updated review\"\n}"},
                 "url": "{{base_url}}/reviews/{{review_id}}"
               }
             },
@@ -596,10 +406,7 @@
               "name": "Delete Review",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/reviews/{{review_id}}"
               }
             }
@@ -609,30 +416,14 @@
     },
     {
       "name": "🛡️ Admin",
-      "description": "Admin-only endpoints (requires admin role)",
       "item": [
         {
           "name": "Admin Login",
-          "description": "Login with admin credentials to get admin token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": ["var json = pm.response.json();", "if(json.data && json.data.token) {", "    pm.collectionVariables.set('token', json.data.token);", "    console.log('Admin token saved!');", "}"],
-                "type": "text/javascript"
-              }
-            }
-          ],
+          "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.token) {", "    pm.collectionVariables.set('token', json.data.token);", "    console.log('✅ Admin token saved!');", "}"], "type": "text/javascript"}}],
           "request": {
             "method": "POST",
-            "header": [
-              {"key": "Accept", "value": "application/json"},
-              {"key": "Content-Type", "value": "application/json"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"admin@bookreader.com\",\n    \"password\": \"password\"\n}"
-            },
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"email\": \"admin@bookreader.com\",\n    \"password\": \"password\"\n}"},
             "url": "{{base_url}}/auth/login"
           }
         },
@@ -643,10 +434,7 @@
               "name": "Get Dashboard Stats",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/stats"
               }
             }
@@ -657,30 +445,18 @@
           "item": [
             {
               "name": "List All Books",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.data && json.data.data.length > 0) {", "    pm.collectionVariables.set('book_id', json.data.data[0].id);", "    console.log('✅ book_id saved: ' + json.data.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "url": {
-                  "raw": "{{base_url}}/admin/books",
-                  "host": ["{{base_url}}"],
-                  "path": ["admin", "books"],
-                  "query": [
-                    {"key": "filter[status]", "value": "pending", "disabled": true}
-                  ]
-                }
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "url": "{{base_url}}/admin/books"
               }
             },
             {
               "name": "Get Book Details",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/books/{{book_id}}"
               }
             },
@@ -688,15 +464,8 @@
               "name": "Update Book",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"title\": \"Updated Title\"\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"title\": \"Updated Title\"\n}"},
                 "url": "{{base_url}}/admin/books/{{book_id}}"
               }
             },
@@ -704,10 +473,7 @@
               "name": "Approve Book",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/books/{{book_id}}/approve"
               }
             },
@@ -715,15 +481,8 @@
               "name": "Reject Book",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"rejection_reason\": \"Content not appropriate\"\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"rejection_reason\": \"Content not appropriate\"\n}"},
                 "url": "{{base_url}}/admin/books/{{book_id}}/reject"
               }
             },
@@ -731,10 +490,7 @@
               "name": "Delete Book",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/books/{{book_id}}"
               }
             }
@@ -745,28 +501,20 @@
           "item": [
             {
               "name": "List Categories",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.length > 0) {", "    pm.collectionVariables.set('category_id', json.data[0].id);", "    console.log('✅ category_id saved: ' + json.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/categories"
               }
             },
             {
               "name": "Create Category",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.id) {", "    pm.collectionVariables.set('category_id', json.data.id);", "    console.log('✅ category_id saved: ' + json.data.id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "POST",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"name\": \"New Category\"\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"name\": \"New Category\"\n}"},
                 "url": "{{base_url}}/admin/categories"
               }
             },
@@ -774,15 +522,8 @@
               "name": "Update Category",
               "request": {
                 "method": "PUT",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Content-Type", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"name\": \"Updated Category\"\n}"
-                },
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+                "body": {"mode": "raw", "raw": "{\n    \"name\": \"Updated Category\"\n}"},
                 "url": "{{base_url}}/admin/categories/{{category_id}}"
               }
             },
@@ -790,10 +531,7 @@
               "name": "Delete Category",
               "request": {
                 "method": "DELETE",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/categories/{{category_id}}"
               }
             }
@@ -804,12 +542,10 @@
           "item": [
             {
               "name": "List Users",
+              "event": [{"listen": "test", "script": {"exec": ["var json = pm.response.json();", "if(json.data && json.data.length > 0) {", "    pm.collectionVariables.set('user_id', json.data[0].id);", "    console.log('✅ user_id saved: ' + json.data[0].id);", "}"], "type": "text/javascript"}}],
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/users"
               }
             },
@@ -817,10 +553,7 @@
               "name": "Get User Details",
               "request": {
                 "method": "GET",
-                "header": [
-                  {"key": "Accept", "value": "application/json"},
-                  {"key": "Authorization", "value": "Bearer {{token}}"}
-                ],
+                "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
                 "url": "{{base_url}}/admin/users/{{user_id}}"
               }
             }
