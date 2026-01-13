@@ -1,11 +1,9 @@
-# Production-ready Laravel Dockerfile with Nginx + PHP-FPM
-FROM php:8.3-fpm-alpine
+# Production-ready Laravel Dockerfile
+# Works on both Render and Railway
+FROM php:8.3-cli-alpine
 
 # Install system dependencies
 RUN apk add --no-cache \
-    nginx \
-    supervisor \
-    gettext \
     git \
     curl \
     libpng-dev \
@@ -43,25 +41,15 @@ RUN mkdir -p storage/framework/cache/data \
     && mkdir -p storage/framework/views \
     && mkdir -p storage/logs \
     && mkdir -p bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage \
     && chmod -R 775 bootstrap/cache
 
-# Copy Nginx configuration
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-
-# Copy PHP-FPM pool configuration
-COPY docker/www.conf /usr/local/etc/php-fpm.d/www.conf
-
-# Copy Supervisor configuration
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 # Copy startup script
-COPY docker/start.sh /start.sh
+COPY docker/start-simple.sh /start.sh
 RUN chmod +x /start.sh
 
-# Expose port (Railway will override with $PORT)
+# Expose port (will be overridden by PORT env var)
 EXPOSE 8080
 
-# Start with supervisor (manages both nginx and php-fpm)
+# Start the application
 CMD ["/start.sh"]
