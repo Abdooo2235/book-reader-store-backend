@@ -95,16 +95,18 @@ class LibraryController extends Controller
 
   /**
    * Add a book to favorites.
+   * Users can favorite ANY approved book (no purchase required).
    */
   public function favorite(Request $request, Book $book): JsonResponse
   {
     $user = $request->user();
 
-    if (!$user->hasOrderedBook($book->id)) {
+    // Verify book is approved
+    if (!$book->isApproved()) {
       return response()->json([
         'success' => false,
-        'message' => 'You must order this book first.',
-      ], 403);
+        'message' => 'This book is not available.',
+      ], 400);
     }
 
     $favoritesCollection = $user->collections()->where('name', 'Favorites')->first();
