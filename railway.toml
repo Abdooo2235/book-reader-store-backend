@@ -1,3 +1,7 @@
 [build]
 builder = "dockerfile"
 dockerfilePath = "Dockerfile"
+
+[deploy]
+# Force using our startup script (not artisan serve)
+startCommand = "/start.sh"
