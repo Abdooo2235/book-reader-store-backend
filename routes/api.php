@@ -36,8 +36,10 @@ use App\Http\Controllers\Admin\{
     DashboardController,
     BookController as AdminBookController,
     CategoryController as AdminCategoryController,
-    UserController as AdminUserController
+    UserController as AdminUserController,
+    WalletController as AdminWalletController
 };
+use App\Http\Controllers\User\WalletController;
 use App\Http\Middleware\AdminMiddleware;
 
 // ============================================================================
@@ -125,6 +127,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PreferenceController::class, 'show'])->name('show');
         Route::put('/', [PreferenceController::class, 'update'])->name('update');
     });
+
+    // ------ Wallet ------
+    Route::get('wallet', [WalletController::class, 'index'])->name('wallet.index');
 });
 
 // ============================================================================
@@ -153,4 +158,8 @@ Route::prefix('admin')
 
         // ------ Users ------
         Route::apiResource('users', AdminUserController::class)->only(['index', 'show']);
+
+        // ------ Wallet Management ------
+        Route::get('users/{user}/wallet', [AdminWalletController::class, 'show'])->name('users.wallet');
+        Route::post('users/{user}/wallet/topup', [AdminWalletController::class, 'topup'])->name('users.wallet.topup');
     });

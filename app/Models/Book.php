@@ -27,6 +27,7 @@ class Book extends Model implements HasMedia
         'status',
         'rejection_reason',
         'average_rating',
+        'price',
         'created_by',
     ];
 
