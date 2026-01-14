@@ -2,7 +2,8 @@
 set -e
 
 # Default PORT to 8080 if not set (Render/Railway will set this)
-PORT=${PORT:-8080}
+# Force PORT to be a number by using arithmetic expansion
+PORT=$((${PORT:-8080}))
 
 echo "=========================================="
 echo "Starting Laravel on port $PORT"
@@ -29,5 +30,6 @@ echo "=========================================="
 echo "Starting PHP Server on 0.0.0.0:$PORT"
 echo "=========================================="
 
-# Start PHP built-in server (works on both Render and Railway)
-exec php artisan serve --host=0.0.0.0 --port=$PORT
+# Use PHP built-in server DIRECTLY (not artisan serve)
+# This avoids Laravel's ServeCommand which has the PORT string bug
+exec php -S 0.0.0.0:$PORT -t public
