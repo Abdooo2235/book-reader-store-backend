@@ -23,9 +23,28 @@ class ProgressController extends Controller
 
   public function update(Request $request, Book $book): JsonResponse
   {
-    if (!$request->user()->hasOrderedBook($book->id)) return response()->json(['success' => false, 'message' => 'Must order first.'], 403);
+    $user = $request->user();
+
+    // For a FREE book store: Allow progress for any book in user's collections
+    // or any approved book (since all approved books are free to read)
+    $hasInCollection = $user->collections()
+      ->whereHas('books', fn($q) => $q->where('books.id', $book->id))
+      ->exists();
+
+    if (!$hasInCollection && !$book->isApproved()) {
+      return response()->json(['success' => false, 'message' => 'Book not available.'], 403);
+    }
+
+    // Auto-add book to Reading collection if not in any collection
+    if (!$hasInCollection && $book->isApproved()) {
+      $readingCollection = $user->collections()->where('name', 'Reading')->first();
+      if ($readingCollection) {
+        $readingCollection->addBook($book->id);
+      }
+    }
+
     $lastPage = $request->validate(['last_page' => 'required|integer|min:0'])['last_page'];
-    $progress = ReadingProgress::getOrCreate($request->user()->id, $book->id);
+    $progress = ReadingProgress::getOrCreate($user->id, $book->id);
     $progress->updateProgress($lastPage, $book->number_of_pages);
     return response()->json(['success' => true, 'message' => 'Progress updated.', 'data' => $progress]);
   }
