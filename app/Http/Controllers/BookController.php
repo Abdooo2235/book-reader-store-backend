@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\AllowedSort;
@@ -86,5 +87,51 @@ class BookController extends Controller
       'success' => true,
       'data' => $book,
     ]);
+  }
+
+  /**
+   * Stream a book's PDF file.
+   * This proxies external PDF files to avoid CORS issues.
+   */
+  public function stream(Book $book)
+  {
+    // Only allow approved books
+    if (!$book->isApproved()) {
+      abort(404, 'Book not found.');
+    }
+
+    $fileUrl = $book->book_file_url;
+
+    if (!$fileUrl) {
+      abort(404, 'Book file not available.');
+    }
+
+    try {
+      // Fetch the PDF from the external URL
+      $client = new \GuzzleHttp\Client([
+        'timeout' => 60,
+        'verify' => false, // For development - production should verify SSL
+      ]);
+
+      $response = $client->get($fileUrl, [
+        'headers' => [
+          'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept' => 'application/pdf,*/*',
+        ],
+      ]);
+
+      $contentType = $response->getHeader('Content-Type')[0] ?? 'application/pdf';
+      $body = $response->getBody()->getContents();
+
+      return response($body, 200, [
+        'Content-Type' => $contentType,
+        'Content-Disposition' => 'inline; filename="' . $book->title . '.pdf"',
+        'Content-Length' => strlen($body),
+        'Cache-Control' => 'public, max-age=86400',
+      ]);
+    } catch (\Exception $e) {
+      \Log::error('Failed to stream book PDF: ' . $e->getMessage());
+      abort(502, 'Failed to fetch book file.');
+    }
   }
 }

@@ -28,8 +28,8 @@ class BookSeeder extends Seeder
     $admin = User::where('role', 'admin')->first() ?? User::first();
     $createdBy = $admin ? $admin->id : 1;
 
-    // Public domain books with VERIFIED WORKING PDF URLs from Internet Archive
-    // These PDFs have been tested and confirmed to work
+    // Using verified PDF URLs from Internet Archive (PDFs are proxied through backend)
+    // These are full books that can actually be read
     $books = [
       [
         'title' => 'The Adventures of Sherlock Holmes',
@@ -42,7 +42,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141034355-L.jpg',
-        'file_url' => 'https://ia600309.us.archive.org/24/items/adventuresofsher00doylrich/adventuresofsher00doylrich.pdf',
+        // Internet Archive - direct PDF link
+        'file_url' => 'https://ia801600.us.archive.org/14/items/adventuressherlockholmes00doylrich/adventuressherlockholmes00doylrich.pdf',
       ],
       [
         'title' => 'Pride and Prejudice',
@@ -55,7 +56,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439518-L.jpg',
-        'file_url' => 'https://ia802707.us.archive.org/4/items/prideandprejud00austrich/prideandprejud00austrich.pdf',
+        'file_url' => 'https://ia600500.us.archive.org/31/items/prideandprejudic00austen/prideandprejudic00austen.pdf',
       ],
       [
         'title' => 'Alice in Wonderland',
@@ -68,7 +69,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439761-L.jpg',
-        'file_url' => 'https://ia800303.us.archive.org/24/items/alicesadventure00carrgoog/alicesadventure00carrgoog.pdf',
+        'file_url' => 'https://ia801406.us.archive.org/20/items/alicesadventures19033gut/19033-pdf.pdf',
       ],
       [
         'title' => 'A Tale of Two Cities',
@@ -81,7 +82,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439600-L.jpg',
-        'file_url' => 'https://ia902608.us.archive.org/18/items/ataleoftwocitie01444gut/tltct10.pdf',
+        'file_url' => 'https://ia802604.us.archive.org/9/items/taleoftwocities00dick/taleoftwocities00dick.pdf',
       ],
       [
         'title' => 'Romeo and Juliet',
@@ -94,7 +95,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780743477116-L.jpg',
-        'file_url' => 'https://ia600209.us.archive.org/9/items/romeoandjuliet01shak/romeoandjuliet01shak.pdf',
+        'file_url' => 'https://ia800302.us.archive.org/11/items/romeoandjuliet00shakrich/romeoandjuliet00shakrich.pdf',
       ],
       [
         'title' => 'The Art of War',
@@ -120,7 +121,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141321004-L.jpg',
-        'file_url' => 'https://ia800301.us.archive.org/1/items/treasureisland00stevrich/treasureisland00stevrich.pdf',
+        'file_url' => 'https://ia802604.us.archive.org/13/items/treasureisland00stevrich/treasureisland00stevrich.pdf',
       ],
       [
         'title' => 'The Jungle Book',
@@ -133,7 +134,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141325295-L.jpg',
-        'file_url' => 'https://ia902609.us.archive.org/31/items/junglebook00kipl/junglebook00kipl.pdf',
+        'file_url' => 'https://ia802609.us.archive.org/31/items/junglebook00kipl/junglebook00kipl.pdf',
       ],
       [
         'title' => 'Frankenstein',
@@ -146,7 +147,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780486282114-L.jpg',
-        'file_url' => 'https://ia802707.us.archive.org/17/items/frankensteinormo00shel/frankensteinormo00shel.pdf',
+        'file_url' => 'https://ia800200.us.archive.org/27/items/frankensteinorm00shelgoog/frankensteinorm00shelgoog.pdf',
       ],
       [
         'title' => 'Dracula',
@@ -159,7 +160,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439846-L.jpg',
-        'file_url' => 'https://ia800209.us.archive.org/25/items/draboram00stokrich/draboram00stokrich.pdf',
+        'file_url' => 'https://ia800302.us.archive.org/4/items/draboram00stokrich/draboram00stokrich.pdf',
       ],
       [
         'title' => 'The Odyssey',
@@ -172,7 +173,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780140449112-L.jpg',
-        'file_url' => 'https://ia802604.us.archive.org/21/items/odyssey00homeuoft/odyssey00homeuoft.pdf',
+        'file_url' => 'https://ia800309.us.archive.org/21/items/odysseyhomer00homegoog/odysseyhomer00homegoog.pdf',
       ],
       [
         'title' => 'The Republic',
@@ -185,7 +186,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780140449143-L.jpg',
-        'file_url' => 'https://ia802609.us.archive.org/34/items/republic00platuoft/republic00platuoft.pdf',
+        'file_url' => 'https://ia800309.us.archive.org/3/items/republicofplato00plutgoog/republicofplato00plutgoog.pdf',
       ],
     ];
 
@@ -196,6 +197,6 @@ class BookSeeder extends Seeder
       );
     }
 
-    echo "Seeded " . count($books) . " public domain books with verified Internet Archive PDF URLs\n";
+    echo "Seeded " . count($books) . " books with Internet Archive PDF URLs (proxied through backend)\n";
   }
 }

@@ -51,6 +51,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::apiResource('books', BookController::class)->only(['index', 'show']);
+Route::get('books/{book}/stream', [BookController::class, 'stream'])->name('books.stream');
 Route::apiResource('categories', CategoryController::class)->only(['index']);
 Route::get('books/{book}/reviews', [ReviewController::class, 'index'])->name('books.reviews.index');
 

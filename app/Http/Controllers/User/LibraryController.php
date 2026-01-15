@@ -94,10 +94,14 @@ class LibraryController extends Controller
       ], 404);
     }
 
+    // Return the proxy stream URL instead of direct external URL
+    // This avoids CORS issues with external PDF sources
+    $streamUrl = url("/api/books/{$book->id}/stream");
+
     return response()->json([
       'success' => true,
       'data' => [
-        'file_url' => $fileUrl,
+        'file_url' => $streamUrl,
         'file_type' => $book->file_type,
         'title' => $book->title,
         'number_of_pages' => $book->number_of_pages,
