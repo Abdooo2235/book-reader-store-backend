@@ -199,6 +199,11 @@ class Book extends Model implements HasMedia
         }
 
         if ($this->file_url) {
+            // If already a full URL, return as-is
+            if (str_starts_with($this->file_url, 'http://') || str_starts_with($this->file_url, 'https://')) {
+                return $this->file_url;
+            }
+            // Otherwise, treat as storage path
             return asset('storage/' . $this->file_url);
         }
 
