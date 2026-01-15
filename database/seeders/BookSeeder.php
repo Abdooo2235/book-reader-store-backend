@@ -42,8 +42,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141034355-L.jpg',
-        // Internet Archive - direct PDF link
-        'file_url' => 'https://ia801600.us.archive.org/14/items/adventuressherlockholmes00doylrich/adventuressherlockholmes00doylrich.pdf',
+        'file_url' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
       ],
       [
         'title' => 'Pride and Prejudice',
@@ -56,7 +55,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439518-L.jpg',
-        'file_url' => 'https://ia600500.us.archive.org/31/items/prideandprejudic00austen/prideandprejudic00austen.pdf',
+        // Using reliable placeholder - Sherlock Holmes text
+        'file_url' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
       ],
       [
         'title' => 'Alice in Wonderland',
@@ -69,7 +69,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439761-L.jpg',
-        'file_url' => 'https://ia801406.us.archive.org/20/items/alicesadventures19033gut/19033-pdf.pdf',
+        'file_url' => 'https://www.adobe.com/be_en/active-use/pdf/Alice_in_Wonderland.pdf',
       ],
       [
         'title' => 'A Tale of Two Cities',
@@ -82,7 +82,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439600-L.jpg',
-        'file_url' => 'https://ia802604.us.archive.org/9/items/taleoftwocities00dick/taleoftwocities00dick.pdf',
+        // Using reliable placeholder - Sherlock Holmes text
+        'file_url' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
       ],
       [
         'title' => 'Romeo and Juliet',
@@ -95,7 +96,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780743477116-L.jpg',
-        'file_url' => 'https://ia800302.us.archive.org/11/items/romeoandjuliet00shakrich/romeoandjuliet00shakrich.pdf',
+        // Using reliable placeholder - Sherlock Holmes text
+        'file_url' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
       ],
       [
         'title' => 'The Art of War',
@@ -108,7 +110,7 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9781590302255-L.jpg',
-        'file_url' => 'https://ia800700.us.archive.org/9/items/artofwar00suntuoft/artofwar00suntuoft.pdf',
+        'file_url' => 'https://sites.ualberta.ca/~enoch/Readings/The_Art_of_War.pdf',
       ],
       [
         'title' => 'Treasure Island',
@@ -121,7 +123,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141321004-L.jpg',
-        'file_url' => 'https://ia802604.us.archive.org/13/items/treasureisland00stevrich/treasureisland00stevrich.pdf',
+        // Using reliable placeholder - Sherlock Holmes text
+        'file_url' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
       ],
       [
         'title' => 'The Jungle Book',
@@ -134,7 +137,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141325295-L.jpg',
-        'file_url' => 'https://ia802609.us.archive.org/31/items/junglebook00kipl/junglebook00kipl.pdf',
+        // Using reliable placeholder - Alice in Wonderland text
+        'file_url' => 'https://www.adobe.com/be_en/active-use/pdf/Alice_in_Wonderland.pdf',
       ],
       [
         'title' => 'Frankenstein',
@@ -147,7 +151,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780486282114-L.jpg',
-        'file_url' => 'https://ia800200.us.archive.org/27/items/frankensteinorm00shelgoog/frankensteinorm00shelgoog.pdf',
+        // Using reliable placeholder - Sherlock Holmes text
+        'file_url' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
       ],
       [
         'title' => 'Dracula',
@@ -160,7 +165,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439846-L.jpg',
-        'file_url' => 'https://ia800302.us.archive.org/4/items/draboram00stokrich/draboram00stokrich.pdf',
+        // Using reliable placeholder - Sherlock Holmes text
+        'file_url' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
       ],
       [
         'title' => 'The Odyssey',
@@ -173,7 +179,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780140449112-L.jpg',
-        'file_url' => 'https://ia800309.us.archive.org/21/items/odysseyhomer00homegoog/odysseyhomer00homegoog.pdf',
+        // Using reliable placeholder - Art of War text
+        'file_url' => 'https://sites.ualberta.ca/~enoch/Readings/The_Art_of_War.pdf',
       ],
       [
         'title' => 'The Republic',
@@ -186,7 +193,8 @@ class BookSeeder extends Seeder
         'created_by' => $createdBy,
         'cover_type' => 'url',
         'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780140449143-L.jpg',
-        'file_url' => 'https://ia800309.us.archive.org/3/items/republicofplato00plutgoog/republicofplato00plutgoog.pdf',
+        // Using reliable placeholder - Art of War text
+        'file_url' => 'https://sites.ualberta.ca/~enoch/Readings/The_Art_of_War.pdf',
       ],
     ];
 
