@@ -130,7 +130,7 @@ class BookController extends Controller
         'Cache-Control' => 'public, max-age=86400',
       ]);
     } catch (\Exception $e) {
-      \Log::error('Failed to stream book PDF: ' . $e->getMessage());
+      Log::error('Failed to stream book PDF: ' . $e->getMessage());
       abort(502, 'Failed to fetch book file.');
     }
   }
