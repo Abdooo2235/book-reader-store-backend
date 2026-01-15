@@ -100,9 +100,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('favorites', [LibraryController::class, 'favorites'])->name('favorites.index');
 
-    // ------ Collections ------
+    // ------ Collections (Shelves) ------
     Route::prefix('collections')->name('collections.')->group(function () {
         Route::get('/', [CollectionController::class, 'index'])->name('index');
+        Route::post('/', [CollectionController::class, 'store'])->name('store');
+        Route::delete('{collection}', [CollectionController::class, 'destroy'])->name('destroy');
         Route::get('{collection}/books', [CollectionController::class, 'books'])->name('books');
         Route::post('{collection}/books', [CollectionController::class, 'addBook'])->name('books.add');
         Route::delete('{collection}/books/{book}', [CollectionController::class, 'removeBook'])->name('books.remove');

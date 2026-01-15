@@ -13,7 +13,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 class LibraryController extends Controller
 {
   /**
-   * Display user's library (ordered books).
+   * Display user's library (books from all collections).
+   * For a FREE book store - returns all books the user has added to collections.
    * 
    * Supports:
    * - Filtering: ?filter[category_id]=1&filter[title]=flutter
@@ -22,9 +23,19 @@ class LibraryController extends Controller
   public function index(Request $request): JsonResponse
   {
     $user = $request->user();
-    $downloadedBookIds = $user->downloadedBookIds();
 
-    if (empty($downloadedBookIds)) {
+    // Get all book IDs from user's collections
+    $collectionBookIds = $user->collections()
+      ->with('books:id')
+      ->get()
+      ->pluck('books')
+      ->flatten()
+      ->pluck('id')
+      ->unique()
+      ->values()
+      ->toArray();
+
+    if (empty($collectionBookIds)) {
       return response()->json([
         'success' => true,
         'data' => [
@@ -36,7 +47,7 @@ class LibraryController extends Controller
     }
 
     $books = QueryBuilder::for(Book::class)
-      ->whereIn('id', $downloadedBookIds)
+      ->whereIn('id', $collectionBookIds)
       ->allowedFilters([
         AllowedFilter::exact('category_id'),
         AllowedFilter::partial('title'),
@@ -62,14 +73,15 @@ class LibraryController extends Controller
 
   /**
    * Get download URL for a book.
+   * Since this is a free book store, any approved book can be downloaded.
    */
   public function download(Request $request, Book $book): JsonResponse
   {
-    // Verify user has ordered this book
-    if (!$request->user()->hasOrderedBook($book->id)) {
+    // Verify book is approved
+    if (!$book->isApproved()) {
       return response()->json([
         'success' => false,
-        'message' => 'You must order this book first.',
+        'message' => 'This book is not available for download.',
       ], 403);
     }
 
@@ -89,6 +101,7 @@ class LibraryController extends Controller
         'file_type' => $book->file_type,
         'title' => $book->title,
         'number_of_pages' => $book->number_of_pages,
+        'cover_url' => $book->cover_url,
       ],
     ]);
   }
