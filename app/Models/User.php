@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    protected $fillable = ['name', 'email', 'password', 'role', 'balance', 'avatar_path'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'avatar_path'];
 
     protected $hidden = ['password'];
 
@@ -27,7 +27,6 @@ class User extends Authenticatable
     protected static function booted(): void
     {
         static::created(function (User $user) {
-            $user->cart()->create([]);
             foreach (['Reading', 'Already Read', 'Planning', 'Favorites'] as $name) {
                 $user->collections()->create(['name' => $name, 'is_default' => true]);
             }
@@ -40,66 +39,63 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    public function cart()
-    {
-        return $this->hasOne(Cart::class);
-    }
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
-    }
     public function collections()
     {
         return $this->hasMany(Collection::class);
     }
+
     public function readingProgress()
     {
         return $this->hasMany(ReadingProgress::class);
     }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
+
     public function preferences()
     {
         return $this->hasOne(UserPreference::class);
     }
+
     public function submittedBooks()
     {
         return $this->hasMany(Book::class, 'created_by');
     }
 
-    public function downloadedBookIds(): array
-    {
-        return OrderItem::whereIn('order_id', $this->orders()->pluck('id'))->pluck('book_id')->toArray();
-    }
-
-    public function hasOrderedBook(int $bookId): bool
-    {
-        return in_array($bookId, $this->downloadedBookIds());
-    }
-
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar_path ? asset('storage/' . $this->avatar_path) : null;
+        return $this->avatar_path ? asset('storage/'.$this->avatar_path) : null;
     }
 
     public function getTotalBooksDownloadedAttribute(): int
     {
-        return count($this->downloadedBookIds());
+        return $this->collections()
+            ->with('books:id')
+            ->get()
+            ->pluck('books')
+            ->flatten()
+            ->pluck('id')
+            ->unique()
+            ->count();
     }
+
     public function getBooksCurrentlyReadingAttribute(): int
     {
         return $this->readingProgress()->where('progress_percentage', '>', 0)->where('progress_percentage', '<', 100)->count();
     }
+
     public function getBooksCompletedAttribute(): int
     {
         return $this->readingProgress()->where('progress_percentage', '>=', 100)->count();
     }
+
     public function getReviewsWrittenAttribute(): int
     {
         return $this->reviews()->count();
     }
+
     public function getReadingStatsAttribute(): array
     {
         return [

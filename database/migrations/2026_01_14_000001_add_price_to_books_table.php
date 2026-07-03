@@ -6,17 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-  public function up(): void
-  {
-    Schema::table('books', function (Blueprint $table) {
-      $table->decimal('price', 8, 2)->default(0.00)->after('average_rating');
-    });
-  }
+    public function up(): void
+    {
+        Schema::table('books', function (Blueprint $table) {
+            $table->decimal('price', 8, 2)->default(0.00)->after('average_rating');
+        });
+    }
 
-  public function down(): void
-  {
-    Schema::table('books', function (Blueprint $table) {
-      $table->dropColumn('price');
-    });
-  }
+    public function down(): void
+    {
+        Schema::table('books', function (Blueprint $table) {
+            $table->dropColumn('price');
+        });
+    }
 };

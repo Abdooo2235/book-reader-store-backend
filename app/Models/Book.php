@@ -11,7 +11,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Book extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -203,8 +203,9 @@ class Book extends Model implements HasMedia
             if (str_starts_with($this->file_url, 'http://') || str_starts_with($this->file_url, 'https://')) {
                 return $this->file_url;
             }
+
             // Otherwise, treat as storage path
-            return asset('storage/' . $this->file_url);
+            return asset('storage/'.$this->file_url);
         }
 
         return null;

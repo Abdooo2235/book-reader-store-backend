@@ -12,186 +12,186 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class LibraryController extends Controller
 {
-  /**
-   * Display user's library (books from all collections).
-   * For a FREE book store - returns all books the user has added to collections.
-   * 
-   * Supports:
-   * - Filtering: ?filter[category_id]=1&filter[title]=flutter
-   * - Sorting: ?sort=-created_at
-   */
-  public function index(Request $request): JsonResponse
-  {
-    $user = $request->user();
+    /**
+     * Display user's library (books from all collections).
+     * For a FREE book store - returns all books the user has added to collections.
+     *
+     * Supports:
+     * - Filtering: ?filter[category_id]=1&filter[title]=flutter
+     * - Sorting: ?sort=-created_at
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $user = $request->user();
 
-    // Get all book IDs from user's collections
-    $collectionBookIds = $user->collections()
-      ->with('books:id')
-      ->get()
-      ->pluck('books')
-      ->flatten()
-      ->pluck('id')
-      ->unique()
-      ->values()
-      ->toArray();
+        // Get all book IDs from user's collections
+        $collectionBookIds = $user->collections()
+            ->with('books:id')
+            ->get()
+            ->pluck('books')
+            ->flatten()
+            ->pluck('id')
+            ->unique()
+            ->values()
+            ->toArray();
 
-    if (empty($collectionBookIds)) {
-      return response()->json([
-        'success' => true,
-        'data' => [
-          'current_page' => 1,
-          'data' => [],
-          'total' => 0,
-        ],
-      ]);
+        if (empty($collectionBookIds)) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'current_page' => 1,
+                    'data' => [],
+                    'total' => 0,
+                ],
+            ]);
+        }
+
+        $books = QueryBuilder::for(Book::class)
+            ->whereIn('id', $collectionBookIds)
+            ->allowedFilters([
+                AllowedFilter::exact('category_id'),
+                AllowedFilter::partial('title'),
+                AllowedFilter::partial('author'),
+            ])
+            ->allowedSorts([
+                AllowedSort::field('title'),
+                AllowedSort::field('created_at'),
+            ])
+            ->defaultSort('-created_at')
+            ->with([
+                'category',
+                'readingProgress' => fn ($q) => $q->where('user_id', $user->id),
+            ])
+            ->paginate($request->get('per_page', 15))
+            ->withQueryString();
+
+        return response()->json([
+            'success' => true,
+            'data' => $books,
+        ]);
     }
 
-    $books = QueryBuilder::for(Book::class)
-      ->whereIn('id', $collectionBookIds)
-      ->allowedFilters([
-        AllowedFilter::exact('category_id'),
-        AllowedFilter::partial('title'),
-        AllowedFilter::partial('author'),
-      ])
-      ->allowedSorts([
-        AllowedSort::field('title'),
-        AllowedSort::field('created_at'),
-      ])
-      ->defaultSort('-created_at')
-      ->with([
-        'category',
-        'readingProgress' => fn($q) => $q->where('user_id', $user->id),
-      ])
-      ->paginate($request->get('per_page', 15))
-      ->withQueryString();
+    /**
+     * Get download URL for a book.
+     * Since this is a free book store, any approved book can be downloaded.
+     */
+    public function download(Request $request, Book $book): JsonResponse
+    {
+        // Verify book is approved
+        if (! $book->isApproved()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This book is not available for download.',
+            ], 403);
+        }
 
-    return response()->json([
-      'success' => true,
-      'data' => $books,
-    ]);
-  }
+        $fileUrl = $book->book_file_url;
 
-  /**
-   * Get download URL for a book.
-   * Since this is a free book store, any approved book can be downloaded.
-   */
-  public function download(Request $request, Book $book): JsonResponse
-  {
-    // Verify book is approved
-    if (!$book->isApproved()) {
-      return response()->json([
-        'success' => false,
-        'message' => 'This book is not available for download.',
-      ], 403);
+        if (! $fileUrl) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Book file is not available.',
+            ], 404);
+        }
+
+        // Return the proxy stream URL instead of direct external URL
+        // This avoids CORS issues with external PDF sources
+        $streamUrl = url("/api/books/{$book->id}/stream");
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'file_url' => $streamUrl,
+                'file_type' => $book->file_type,
+                'title' => $book->title,
+                'number_of_pages' => $book->number_of_pages,
+                'cover_url' => $book->cover_url,
+            ],
+        ]);
     }
 
-    $fileUrl = $book->book_file_url;
+    /**
+     * Add a book to favorites.
+     * Users can favorite ANY approved book (no purchase required).
+     */
+    public function favorite(Request $request, Book $book): JsonResponse
+    {
+        $user = $request->user();
 
-    if (!$fileUrl) {
-      return response()->json([
-        'success' => false,
-        'message' => 'Book file is not available.',
-      ], 404);
+        // Verify book is approved
+        if (! $book->isApproved()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This book is not available.',
+            ], 400);
+        }
+
+        $favoritesCollection = $user->collections()->where('name', 'Favorites')->first();
+
+        if (! $favoritesCollection) {
+            $favoritesCollection = $user->collections()->create(['name' => 'Favorites', 'is_default' => true]);
+        }
+
+        if ($favoritesCollection->hasBook($book->id)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Book is already in favorites.',
+            ], 400);
+        }
+
+        $favoritesCollection->addBook($book->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Book added to favorites.',
+        ]);
     }
 
-    // Return the proxy stream URL instead of direct external URL
-    // This avoids CORS issues with external PDF sources
-    $streamUrl = url("/api/books/{$book->id}/stream");
+    /**
+     * Remove a book from favorites.
+     */
+    public function unfavorite(Request $request, Book $book): JsonResponse
+    {
+        $user = $request->user();
+        $favoritesCollection = $user->collections()->where('name', 'Favorites')->first();
 
-    return response()->json([
-      'success' => true,
-      'data' => [
-        'file_url' => $streamUrl,
-        'file_type' => $book->file_type,
-        'title' => $book->title,
-        'number_of_pages' => $book->number_of_pages,
-        'cover_url' => $book->cover_url,
-      ],
-    ]);
-  }
+        if (! $favoritesCollection || ! $favoritesCollection->hasBook($book->id)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Book is not in favorites.',
+            ], 400);
+        }
 
-  /**
-   * Add a book to favorites.
-   * Users can favorite ANY approved book (no purchase required).
-   */
-  public function favorite(Request $request, Book $book): JsonResponse
-  {
-    $user = $request->user();
+        $favoritesCollection->removeBook($book->id);
 
-    // Verify book is approved
-    if (!$book->isApproved()) {
-      return response()->json([
-        'success' => false,
-        'message' => 'This book is not available.',
-      ], 400);
+        return response()->json([
+            'success' => true,
+            'message' => 'Book removed from favorites.',
+        ]);
     }
 
-    $favoritesCollection = $user->collections()->where('name', 'Favorites')->first();
+    /**
+     * Get all favorite books.
+     */
+    public function favorites(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $favoritesCollection = $user->collections()->where('name', 'Favorites')->first();
 
-    if (!$favoritesCollection) {
-      $favoritesCollection = $user->collections()->create(['name' => 'Favorites', 'is_default' => true]);
+        if (! $favoritesCollection) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+            ]);
+        }
+
+        $books = $favoritesCollection->books()
+            ->with(['category', 'readingProgress' => fn ($q) => $q->where('user_id', $user->id)])
+            ->paginate($request->get('per_page', 15));
+
+        return response()->json([
+            'success' => true,
+            'data' => $books,
+        ]);
     }
-
-    if ($favoritesCollection->hasBook($book->id)) {
-      return response()->json([
-        'success' => false,
-        'message' => 'Book is already in favorites.',
-      ], 400);
-    }
-
-    $favoritesCollection->addBook($book->id);
-
-    return response()->json([
-      'success' => true,
-      'message' => 'Book added to favorites.',
-    ]);
-  }
-
-  /**
-   * Remove a book from favorites.
-   */
-  public function unfavorite(Request $request, Book $book): JsonResponse
-  {
-    $user = $request->user();
-    $favoritesCollection = $user->collections()->where('name', 'Favorites')->first();
-
-    if (!$favoritesCollection || !$favoritesCollection->hasBook($book->id)) {
-      return response()->json([
-        'success' => false,
-        'message' => 'Book is not in favorites.',
-      ], 400);
-    }
-
-    $favoritesCollection->removeBook($book->id);
-
-    return response()->json([
-      'success' => true,
-      'message' => 'Book removed from favorites.',
-    ]);
-  }
-
-  /**
-   * Get all favorite books.
-   */
-  public function favorites(Request $request): JsonResponse
-  {
-    $user = $request->user();
-    $favoritesCollection = $user->collections()->where('name', 'Favorites')->first();
-
-    if (!$favoritesCollection) {
-      return response()->json([
-        'success' => true,
-        'data' => [],
-      ]);
-    }
-
-    $books = $favoritesCollection->books()
-      ->with(['category', 'readingProgress' => fn($q) => $q->where('user_id', $user->id)])
-      ->paginate($request->get('per_page', 15));
-
-    return response()->json([
-      'success' => true,
-      'data' => $books,
-    ]);
-  }
 }

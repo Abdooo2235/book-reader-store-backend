@@ -12,7 +12,7 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
         $users = User::where('role', 'user')
-            ->withCount(['orders', 'reviews', 'submittedBooks'])
+            ->withCount(['reviews', 'submittedBooks'])
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 15));
 
@@ -21,7 +21,8 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        $user->loadCount(['orders', 'reviews', 'submittedBooks', 'collections']);
+        $user->loadCount(['reviews', 'submittedBooks', 'collections']);
+
         return response()->json(['success' => true, 'data' => $user]);
     }
 }
