@@ -24,7 +24,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 279,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141439518-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1342/1342-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/pride-and-prejudice.pdf',
             ],
             [
                 'title' => 'Great Expectations',
@@ -34,7 +34,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 544,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141439563-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1400/1400-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/great-expectations.pdf',
             ],
             [
                 'title' => 'The Great Gatsby',
@@ -44,7 +44,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 180,
                 'price' => 4.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/64317/64317-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/the-great-gatsby.pdf',
             ],
             [
                 'title' => 'Little Women',
@@ -54,7 +54,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 449,
                 'price' => 3.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780147514011-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/514/514-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/little-women.pdf',
             ],
 
             // === SCIENCE FICTION (4 books) ===
@@ -66,7 +66,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 280,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486282114-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/84/84-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/frankenstein.pdf',
             ],
             [
                 'title' => 'The Time Machine',
@@ -76,7 +76,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 118,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780451530707-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/35/35-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/the-time-machine.pdf',
             ],
             [
                 'title' => 'The War of the Worlds',
@@ -86,7 +86,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 192,
                 'price' => 2.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780451530653-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/36/36-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/the-war-of-the-worlds.pdf',
             ],
             [
                 'title' => 'Twenty Thousand Leagues Under the Sea',
@@ -96,7 +96,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 320,
                 'price' => 5.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780553212525-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/164/164-pdf.pdf',
+                'file' => 'https://archive.org/download/bub_gb_470XAAAAYAAJ/bub_gb_470XAAAAYAAJ.pdf',
             ],
 
             // === FANTASY (3 books) ===
@@ -108,7 +108,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 96,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141439761-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/11/11-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/alices-adventures-in-wonderland.pdf',
             ],
             [
                 'title' => 'Peter Pan',
@@ -118,7 +118,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 200,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141322575-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/16/16-pdf.pdf',
+                'file' => 'https://archive.org/download/peter-pan-and-wendy/Peter%20Pan%20and%20Wendy.pdf',
             ],
             [
                 'title' => 'The Wonderful Wizard of Oz',
@@ -128,7 +128,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 152,
                 'price' => 3.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486206912-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/55/55-pdf.pdf',
+                'file' => 'https://archive.org/download/the-wonderful-wizard-of-oz-pdfdrive.com/the%20wonderful%20wizard%20of%20oz%20%28%20PDFDrive.com%20%29.pdf',
             ],
 
             // === MYSTERY (3 books) ===
@@ -140,7 +140,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 307,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141034355-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1661/1661-pdf.pdf',
+                'file' => 'https://sherlock-holm.es/stories/pdf/a4/1-sided/advs.pdf',
             ],
             [
                 'title' => 'The Moonstone',
@@ -150,7 +150,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 528,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140434088-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/155/155-pdf.pdf',
+                'file' => 'https://archive.org/download/moonstoneromance02coll/moonstoneromance02coll.pdf',
             ],
             [
                 'title' => 'The Thirty-Nine Steps',
@@ -160,7 +160,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 100,
                 'price' => 4.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141441177-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/558/558-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/the-thirty-nine-steps.pdf',
             ],
 
             // === ROMANCE (3 books) ===
@@ -172,7 +172,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 507,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141441146-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1260/1260-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/jane-eyre.pdf',
             ],
             [
                 'title' => 'Wuthering Heights',
@@ -182,7 +182,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 416,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141439556-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/768/768-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/wuthering-heights.pdf',
             ],
             [
                 'title' => 'Emma',
@@ -192,7 +192,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 474,
                 'price' => 3.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141439587-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/158/158-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/emma.pdf',
             ],
 
             // === BIOGRAPHY (3 books) ===
@@ -204,7 +204,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 143,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486290737-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/20203/20203-pdf.pdf',
+                'file' => 'https://archive.org/download/in.ernet.dli.2015.38959/2015.38959.The-Autobiography-Of-Benjamin-Franklin.pdf',
             ],
             [
                 'title' => 'Narrative of the Life of Frederick Douglass',
@@ -214,7 +214,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 128,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486284996-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/23/23-pdf.pdf',
+                'file' => 'https://archive.org/download/narrativeoflifeo00dougrich/narrativeoflifeo00dougrich.pdf',
             ],
             [
                 'title' => 'Up from Slavery',
@@ -224,7 +224,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 208,
                 'price' => 5.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486287386-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/2376/2376-pdf.pdf',
+                'file' => 'https://archive.org/download/in.ernet.dli.2015.2381/2015.2381.Up-From-Slavery.pdf',
             ],
 
             // === SELF-HELP (3 books) ===
@@ -236,7 +236,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 68,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9781590302255-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/132/132-pdf.pdf',
+                'file' => 'https://sites.ualberta.ca/~enoch/Readings/The_Art_of_War.pdf',
             ],
             [
                 'title' => 'Meditations',
@@ -246,7 +246,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 254,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140449334-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/55317/55317-pdf.pdf',
+                'file' => 'https://archive.org/download/meditationsofmar00marc/meditationsofmar00marc.pdf',
             ],
             [
                 'title' => 'Self-Reliance',
@@ -256,7 +256,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 96,
                 'price' => 2.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486277905-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/16643/16643-pdf.pdf',
+                'file' => 'https://archive.org/download/essaysfirstseri01emergoog/essaysfirstseri01emergoog.pdf',
             ],
 
             // === HISTORY (4 books) ===
@@ -268,7 +268,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 3800,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140433937-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/25717/25717-pdf.pdf',
+                'file' => 'https://archive.org/download/historyofdecline01gibb1/historyofdecline01gibb1.pdf',
             ],
             [
                 'title' => 'The Prince',
@@ -278,7 +278,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 140,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140447064-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1232/1232-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/the-prince.pdf',
             ],
             [
                 'title' => 'Common Sense',
@@ -288,7 +288,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 52,
                 'price' => 1.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780143036258-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/147/147-pdf.pdf',
+                'file' => 'https://archive.org/download/commonsense00painrich/commonsense00painrich.pdf',
             ],
             [
                 'title' => 'The Federalist Papers',
@@ -298,7 +298,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 584,
                 'price' => 6.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780451528810-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/18/18-pdf.pdf',
+                'file' => 'https://archive.org/download/cu31924032635355/cu31924032635355.pdf',
             ],
 
             // === TECHNOLOGY (3 books) ===
@@ -310,7 +310,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 502,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780451529060-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1228/1228-pdf.pdf',
+                'file' => 'https://archive.org/download/cu31924052394107/cu31924052394107.pdf',
             ],
             [
                 'title' => 'The Interpretation of Dreams',
@@ -320,7 +320,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 640,
                 'price' => 7.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780465019779-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/63090/63090-pdf.pdf',
+                'file' => 'https://archive.org/download/in.ernet.dli.2015.188424/2015.188424.The-Interpretation-Of-Dreams.pdf',
             ],
             [
                 'title' => 'Relativity: The Special and General Theory',
@@ -330,7 +330,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 168,
                 'price' => 4.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486417141-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/5001/5001-pdf.pdf',
+                'file' => 'https://archive.org/download/cu31924011804774/cu31924011804774.pdf',
             ],
 
             // === PHILOSOPHY (4 books) ===
@@ -342,7 +342,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 416,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140449143-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1497/1497-pdf.pdf',
+                'file' => 'https://archive.org/download/republicofplato00plat/republicofplato00plat.pdf',
             ],
             [
                 'title' => 'Beyond Good and Evil',
@@ -352,7 +352,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 240,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140449235-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/4363/4363-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/beyond-good-and-evil.pdf',
             ],
             [
                 'title' => 'Thus Spoke Zarathustra',
@@ -362,7 +362,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 352,
                 'price' => 4.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140441185-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1998/1998-pdf.pdf',
+                'file' => 'https://archive.org/download/thusspakezarath01nietgoog/thusspakezarath01nietgoog.pdf',
             ],
             [
                 'title' => 'Critique of Pure Reason',
@@ -372,7 +372,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 856,
                 'price' => 8.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140447477-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/4280/4280-pdf.pdf',
+                'file' => 'https://archive.org/download/immanuelkantscri00kantuoft/immanuelkantscri00kantuoft.pdf',
             ],
 
             // === POETRY (3 books) ===
@@ -384,7 +384,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 400,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140421996-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1322/1322-pdf.pdf',
+                'file' => 'https://archive.org/download/leavesofgrass00inwhit/leavesofgrass00inwhit.pdf',
             ],
             [
                 'title' => 'The Canterbury Tales',
@@ -394,7 +394,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 504,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140424386-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/2383/2383-pdf.pdf',
+                'file' => 'https://archive.org/download/canterburytales00tyrwgoog/canterburytales00tyrwgoog.pdf',
             ],
             [
                 'title' => 'The Divine Comedy',
@@ -404,7 +404,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 798,
                 'price' => 5.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140448955-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/8800/8800-pdf.pdf',
+                'file' => 'https://archive.org/download/divinecomedy03aliggoog/divinecomedy03aliggoog.pdf',
             ],
 
             // === DRAMA (3 books) ===
@@ -416,7 +416,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 128,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780743477116-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1513/1513-pdf.pdf',
+                'file' => 'https://archive.org/download/tragedyofromeoan00shakuoft/tragedyofromeoan00shakuoft.pdf',
             ],
             [
                 'title' => 'Hamlet',
@@ -426,7 +426,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 144,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780743477123-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1524/1524-pdf.pdf',
+                'file' => 'https://archive.org/download/tragedyhamletpr00shakgoog/tragedyhamletpr00shakgoog.pdf',
             ],
             [
                 'title' => 'A Midsummer Night\'s Dream',
@@ -436,7 +436,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 112,
                 'price' => 2.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780743477543-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/1514/1514-pdf.pdf',
+                'file' => 'https://archive.org/download/a-midsummer-night-s-dream_202505/A_Midsummer_Night___s_Dream_text.pdf',
             ],
 
             // === CHILDREN (3 books) ===
@@ -448,7 +448,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 200,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140447637-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/28/28-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/aesops-fables.pdf',
             ],
             [
                 'title' => "Grimm's Fairy Tales",
@@ -458,7 +458,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 512,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140449846-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/2591/2591-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/grimms-fairy-tales.pdf',
             ],
             [
                 'title' => 'The Tale of Peter Rabbit',
@@ -468,7 +468,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 72,
                 'price' => 1.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780723247708-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/14838/14838-pdf.pdf',
+                'file' => 'https://archive.org/download/peter-rabbit_20220822/Peter%20Rabbit.pdf',
             ],
 
             // === YOUNG ADULT (4 books) ===
@@ -480,7 +480,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 292,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141321004-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/120/120-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/treasure-island.pdf',
             ],
             [
                 'title' => 'The Jungle Book',
@@ -490,7 +490,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 277,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141325295-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/236/236-pdf.pdf',
+                'file' => 'https://www.planetebook.com/free-ebooks/the-jungle-book.pdf',
             ],
             [
                 'title' => 'The Swiss Family Robinson',
@@ -500,7 +500,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 352,
                 'price' => 4.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140621341-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/3836/3836-pdf.pdf',
+                'file' => 'https://archive.org/download/swissfamilyrobi03wyssgoog/swissfamilyrobi03wyssgoog.pdf',
             ],
             [
                 'title' => 'The Call of the Wild',
@@ -510,7 +510,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 128,
                 'price' => 2.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780141321059-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/215/215-pdf.pdf',
+                'file' => 'https://archive.org/download/callwild01londgoog/callwild01londgoog.pdf',
             ],
 
             // === NON-FICTION (3 books) ===
@@ -522,7 +522,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 352,
                 'price' => 0,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780486284958-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/205/205-pdf.pdf',
+                'file' => 'https://archive.org/download/walden03thorgoog/walden03thorgoog.pdf',
             ],
             [
                 'title' => 'On Liberty',
@@ -532,7 +532,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 128,
                 'price' => 3.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140432077-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/34901/34901-pdf.pdf',
+                'file' => 'https://archive.org/download/onliberty00millgoog/onliberty00millgoog.pdf',
             ],
             [
                 'title' => 'The Communist Manifesto',
@@ -542,7 +542,7 @@ class FamousBooksSeeder extends Seeder
                 'pages' => 68,
                 'price' => 1.99,
                 'cover' => 'https://covers.openlibrary.org/b/isbn/9780140447576-L.jpg',
-                'file' => 'https://www.gutenberg.org/files/61/61-pdf.pdf',
+                'file' => 'https://www.marxists.org/archive/marx/works/download/pdf/Manifesto.pdf',
             ],
         ];
 
