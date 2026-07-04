@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -67,17 +68,17 @@ class Book extends Model implements HasMedia
     // SCOPES
     // ============================================================================
 
-    public function scopeApproved($query)
+    public function scopeApproved(Builder $query)
     {
         return $query->where('status', 'approved');
     }
 
-    public function scopePending($query)
+    public function scopePending(Builder $query)
     {
         return $query->where('status', 'pending');
     }
 
-    public function scopeRejected($query)
+    public function scopeRejected(Builder $query)
     {
         return $query->where('status', 'rejected');
     }
