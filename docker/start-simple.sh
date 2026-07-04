@@ -21,6 +21,7 @@ echo "Running seeders..."
 php artisan db:seed --class=AdminSeeder --force || true
 php artisan db:seed --class=CategorySeeder --force || true
 php artisan db:seed --class=BookSeeder --force || true
+php artisan storage:link --force || true
 
 # Cache for production
 php artisan config:cache
