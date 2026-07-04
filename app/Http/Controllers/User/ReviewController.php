@@ -19,6 +19,9 @@ class ReviewController extends Controller
 
     public function store(Request $request, Book $book): JsonResponse
     {
+        if (! $book->isApproved()) {
+            return response()->json(['success' => false, 'message' => 'Book is not available.'], 404);
+        }
         $validated = $request->validate(['rating' => 'required|integer|min:1|max:5', 'review_text' => 'nullable|string|max:1000']);
         $review = Review::updateOrCreate(['user_id' => $request->user()->id, 'book_id' => $book->id], ['rating' => $validated['rating'], 'review_text' => $validated['review_text'] ?? null]);
 
