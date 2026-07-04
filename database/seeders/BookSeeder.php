@@ -69,7 +69,7 @@ class BookSeeder extends Seeder
                 'created_by' => $createdBy,
                 'cover_type' => 'url',
                 'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141439761-L.jpg',
-                'file_url' => 'https://www.adobe.com/be_en/active-use/pdf/Alice_in_Wonderland.pdf',
+                'file_url' => 'https://www.planetebook.com/free-ebooks/alices-adventures-in-wonderland.pdf',
             ],
             [
                 'title' => 'A Tale of Two Cities',
@@ -138,7 +138,7 @@ class BookSeeder extends Seeder
                 'cover_type' => 'url',
                 'cover_image' => 'https://covers.openlibrary.org/b/isbn/9780141325295-L.jpg',
                 // Using reliable placeholder - Alice in Wonderland text
-                'file_url' => 'https://www.adobe.com/be_en/active-use/pdf/Alice_in_Wonderland.pdf',
+                'file_url' => 'https://www.planetebook.com/free-ebooks/alices-adventures-in-wonderland.pdf',
             ],
             [
                 'title' => 'Frankenstein',

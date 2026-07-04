@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\AllowedSort;
@@ -90,48 +96,174 @@ class BookController extends Controller
     }
 
     /**
-     * Stream a book's PDF file.
-     * This proxies external PDF files to avoid CORS issues.
+     * Stream a book's PDF file to the reader.
+     *
+     * Resolution order (local is always preferred over remote):
+     *   1. An uploaded MediaLibrary `book_file` -> served straight from disk.
+     *   2. A relative `file_url` on the public disk -> served straight from disk.
+     *   3. A genuinely external http(s) `file_url` -> proxied to dodge CORS,
+     *      with redirect-following, retries and graceful JSON errors.
+     *
+     * Serving local files directly is not just faster: the production server
+     * runs a single-process `php -S`, so proxying a URL that points back at
+     * this same app would deadlock the worker.
      */
     public function stream(Book $book)
     {
-        // Only allow approved books
         if (! $book->isApproved()) {
-            abort(404, 'Book not found.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Book not found.',
+            ], 404);
         }
 
-        $fileUrl = $book->book_file_url;
-
-        if (! $fileUrl) {
-            abort(404, 'Book file not available.');
+        // 1) Uploaded MediaLibrary file -> stream from local disk.
+        $media = $book->getFirstMedia('book_file');
+        if ($media && is_file($media->getPath())) {
+            return $this->streamLocalFile($media->getPath(), $book->title, $media->mime_type);
         }
 
-        try {
-            // Fetch the PDF from the external URL
-            $client = new \GuzzleHttp\Client([
-                'timeout' => 60,
-                'verify' => true, // Enforce SSL certificate verification
-            ]);
-
-            $response = $client->get($fileUrl, [
-                'headers' => [
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Accept' => 'application/pdf,*/*',
-                ],
-            ]);
-
-            $contentType = $response->getHeader('Content-Type')[0] ?? 'application/pdf';
-            $body = $response->getBody()->getContents();
-
-            return response($body, 200, [
-                'Content-Type' => $contentType,
-                'Content-Disposition' => 'inline; filename="'.$book->title.'.pdf"',
-                'Content-Length' => strlen($body),
-                'Cache-Control' => 'public, max-age=86400',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to stream book PDF: '.$e->getMessage());
-            abort(502, 'Failed to fetch book file.');
+        // 2) Relative file_url stored on the public disk -> stream from local disk.
+        $fileUrl = $book->file_url;
+        if ($fileUrl && ! Str::startsWith($fileUrl, ['http://', 'https://'])) {
+            $localPath = Storage::disk('public')->path($fileUrl);
+            if (is_file($localPath)) {
+                return $this->streamLocalFile($localPath, $book->title);
+            }
         }
+
+        // 3) External URL -> proxy it.
+        if ($fileUrl && Str::startsWith($fileUrl, ['http://', 'https://'])) {
+            return $this->proxyExternalFile($book, $fileUrl);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Book file is not available.',
+        ], 404);
+    }
+
+    /**
+     * Stream a file that lives on the local filesystem.
+     *
+     * BinaryFileResponse handles Content-Length and HTTP range requests for us.
+     */
+    private function streamLocalFile(string $path, string $title, ?string $mimeType = null)
+    {
+        return response()->file($path, [
+            'Content-Type' => $mimeType ?: 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$this->safeFilename($title).'.pdf"',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
+    /**
+     * Proxy an external PDF, streaming it through in chunks.
+     *
+     * SSL verification stays ON. On a cert/host/network failure or an upstream
+     * error we return a clean JSON error rather than a bare abort(502), and we
+     * retry transient failures (connection resets, 5xx) a couple of times since
+     * some free hosts (e.g. archive.org nodes) intermittently return 503.
+     */
+    private function proxyExternalFile(Book $book, string $fileUrl)
+    {
+        $client = new \GuzzleHttp\Client([
+            'timeout' => 30,
+            'connect_timeout' => 10,
+            'verify' => true, // Keep SSL certificate verification enabled.
+            'allow_redirects' => [
+                'max' => 5,
+                'strict' => false,
+                'referer' => true,
+                'protocols' => ['http', 'https'],
+                'track_redirects' => false,
+            ],
+            'http_errors' => true,
+        ]);
+
+        $requestOptions = [
+            'stream' => true,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept' => 'application/pdf,application/octet-stream,*/*',
+            ],
+        ];
+
+        $maxAttempts = 3;
+        $upstream = null;
+        $lastError = null;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                $upstream = $client->request('GET', $fileUrl, $requestOptions);
+                break;
+            } catch (ClientException $e) {
+                // 4xx: the file is genuinely missing/forbidden. Do not retry.
+                Log::warning('Book file unavailable upstream (4xx)', [
+                    'book_id' => $book->id,
+                    'url' => $fileUrl,
+                    'status' => $e->getResponse()?->getStatusCode(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The book file could not be found at its source.',
+                ], 404);
+            } catch (ConnectException|ServerException $e) {
+                // Network/SSL failure or 5xx: transient, worth another try.
+                $lastError = $e;
+                if ($attempt < $maxAttempts) {
+                    usleep(300000 * $attempt); // 0.3s, 0.6s backoff
+                }
+            } catch (GuzzleException $e) {
+                // Too many redirects, etc. Not retryable.
+                $lastError = $e;
+                break;
+            }
+        }
+
+        if ($upstream === null) {
+            Log::error('Failed to stream book PDF after retries', [
+                'book_id' => $book->id,
+                'url' => $fileUrl,
+                'error' => $lastError?->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'The book file is temporarily unavailable. Please try again shortly.',
+            ], 502);
+        }
+
+        $body = $upstream->getBody();
+        $contentType = $upstream->getHeaderLine('Content-Type') ?: 'application/pdf';
+        $contentLength = $upstream->getHeaderLine('Content-Length');
+
+        $headers = [
+            'Content-Type' => $contentType,
+            'Content-Disposition' => 'inline; filename="'.$this->safeFilename($book->title).'.pdf"',
+            'Cache-Control' => 'public, max-age=86400',
+        ];
+        if ($contentLength !== '') {
+            $headers['Content-Length'] = $contentLength;
+        }
+
+        return response()->stream(function () use ($body) {
+            while (! $body->eof()) {
+                echo $body->read(65536); // 64KB chunks
+                flush();
+            }
+            $body->close();
+        }, 200, $headers);
+    }
+
+    /**
+     * Strip characters that would break a Content-Disposition filename.
+     */
+    private function safeFilename(string $title): string
+    {
+        $safe = preg_replace('/[^A-Za-z0-9 _.-]/', '', $title);
+
+        return trim($safe) !== '' ? trim($safe) : 'book';
     }
 }
