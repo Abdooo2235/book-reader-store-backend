@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\BookController as AdminBookController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,30 +16,22 @@ use Illuminate\Support\Facades\Route;
 // ============================================================================
 // CONTROLLERS
 // ============================================================================
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\User\{
-    ProfileController,
-    BookController as UserBookController,
-    MyBookController,
-    CartController,
-    OrderController,
-    LibraryController,
-    CollectionController,
-    ProgressController,
-    ReviewController,
-    PreferenceController
-};
-use App\Http\Controllers\Admin\{
-    DashboardController,
-    BookController as AdminBookController,
-    CategoryController as AdminCategoryController,
-    UserController as AdminUserController,
-    WalletController as AdminWalletController
-};
-use App\Http\Controllers\User\WalletController;
+use App\Http\Controllers\User\BookController as UserBookController;
+use App\Http\Controllers\User\CollectionController;
+use App\Http\Controllers\User\LibraryController;
+use App\Http\Controllers\User\MyBookController;
+use App\Http\Controllers\User\PreferenceController;
+use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\ProgressController;
+use App\Http\Controllers\User\ReviewController;
 use App\Http\Middleware\AdminMiddleware;
+use Illuminate\Support\Facades\Route;
 
 // ============================================================================
 // PUBLIC ROUTES (No Authentication)
@@ -81,17 +72,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('{book}', [MyBookController::class, 'destroy'])->name('destroy');
     });
 
-    // ------ Cart ------
-    Route::prefix('cart')->name('cart.')->group(function () {
-        Route::get('/', [CartController::class, 'index'])->name('index');
-        Route::post('books/{book}', [CartController::class, 'add'])->name('add');
-        Route::delete('books/{book}', [CartController::class, 'remove'])->name('remove');
-        Route::post('checkout', [CartController::class, 'checkout'])->name('checkout');
-    });
-
-    // ------ Orders ------
-    Route::apiResource('orders', OrderController::class)->only(['index', 'show']);
-
     // ------ Library & Favorites ------
     Route::prefix('library')->name('library.')->group(function () {
         Route::get('/', [LibraryController::class, 'index'])->name('index');
@@ -130,9 +110,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PreferenceController::class, 'show'])->name('show');
         Route::put('/', [PreferenceController::class, 'update'])->name('update');
     });
-
-    // ------ Wallet ------
-    Route::get('wallet', [WalletController::class, 'index'])->name('wallet.index');
 });
 
 // ============================================================================
@@ -161,8 +138,4 @@ Route::prefix('admin')
 
         // ------ Users ------
         Route::apiResource('users', AdminUserController::class)->only(['index', 'show']);
-
-        // ------ Wallet Management ------
-        Route::get('users/{user}/wallet', [AdminWalletController::class, 'show'])->name('users.wallet');
-        Route::post('users/{user}/wallet/topup', [AdminWalletController::class, 'topup'])->name('users.wallet.topup');
     });

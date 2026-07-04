@@ -3,15 +3,14 @@
 // Comprehensive API Test Script
 // Run with: php artisan tinker < tests/test_endpoints.php
 
-use App\Models\User;
 use App\Models\Book;
-use App\Models\Category;
 use App\Models\Cart;
-use App\Models\Order;
+use App\Models\Category;
 use App\Models\Collection;
-use App\Models\Review;
+use App\Models\Order;
 use App\Models\ReadingProgress;
-use App\Models\UserPreference;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 echo "\n========================================\n";
@@ -23,16 +22,18 @@ $failed = 0;
 
 function test($name, $condition, $details = '')
 {
-  global $passed, $failed;
-  if ($condition) {
-    echo "✅ PASS: $name\n";
-    $passed++;
-  } else {
-    echo "❌ FAIL: $name";
-    if ($details) echo " - $details";
-    echo "\n";
-    $failed++;
-  }
+    global $passed, $failed;
+    if ($condition) {
+        echo "✅ PASS: $name\n";
+        $passed++;
+    } else {
+        echo "❌ FAIL: $name";
+        if ($details) {
+            echo " - $details";
+        }
+        echo "\n";
+        $failed++;
+    }
 }
 
 // ==================== DATABASE TESTS ====================
@@ -46,10 +47,10 @@ echo "\n--- MODEL TESTS ---\n";
 
 // Test User creation with auto-create
 $testUser = User::create([
-  'name' => 'Test User',
-  'email' => 'test' . time() . '@test.com',
-  'password' => Hash::make('password'),
-  'role' => 'user',
+    'name' => 'Test User',
+    'email' => 'test'.time().'@test.com',
+    'password' => Hash::make('password'),
+    'role' => 'user',
 ]);
 
 test('User created', $testUser->exists);
@@ -57,21 +58,21 @@ test('User cart auto-created', $testUser->cart !== null);
 test('User collections auto-created (3)', $testUser->collections()->count() === 3);
 test('User preferences auto-created', $testUser->preferences !== null);
 test(
-  'Default collections have correct names',
-  $testUser->collections()->pluck('name')->toArray() == ['Reading', 'Already Read', 'Planning']
+    'Default collections have correct names',
+    $testUser->collections()->pluck('name')->toArray() == ['Reading', 'Already Read', 'Planning']
 );
 
 // Test Book model
 $category = Category::first();
 $testBook = Book::create([
-  'title' => 'Test Book',
-  'author' => 'Test Author',
-  'description' => 'Test description',
-  'category_id' => $category->id,
-  'file_type' => 'pdf',
-  'status' => 'approved',
-  'number_of_pages' => 100,
-  'created_by' => $testUser->id,
+    'title' => 'Test Book',
+    'author' => 'Test Author',
+    'description' => 'Test description',
+    'category_id' => $category->id,
+    'file_type' => 'pdf',
+    'status' => 'approved',
+    'number_of_pages' => 100,
+    'created_by' => $testUser->id,
 ]);
 
 test('Book created', $testBook->exists);
@@ -90,7 +91,7 @@ test('Add book to cart', $cart->hasBook($testBook->id));
 test('Cart total items is 1', $cart->total_items === 1);
 
 $cart->removeBook($testBook->id);
-test('Remove book from cart', !$cart->hasBook($testBook->id));
+test('Remove book from cart', ! $cart->hasBook($testBook->id));
 
 // ==================== ORDER TESTS ====================
 echo "\n--- ORDER TESTS ---\n";
@@ -113,7 +114,7 @@ $collection->addBook($testBook->id);
 test('Add book to collection', $collection->hasBook($testBook->id));
 
 $collection->removeBook($testBook->id);
-test('Remove book from collection', !$collection->hasBook($testBook->id));
+test('Remove book from collection', ! $collection->hasBook($testBook->id));
 
 // ==================== READING PROGRESS TESTS ====================
 echo "\n--- READING PROGRESS TESTS ---\n";
@@ -132,10 +133,10 @@ test('Progress updated to 100%', $progress->progress_percentage == 100);
 echo "\n--- REVIEW TESTS ---\n";
 
 $review = Review::create([
-  'user_id' => $testUser->id,
-  'book_id' => $testBook->id,
-  'rating' => 5,
-  'review_text' => 'Great book!',
+    'user_id' => $testUser->id,
+    'book_id' => $testBook->id,
+    'rating' => 5,
+    'review_text' => 'Great book!',
 ]);
 
 test('Review created', $review->exists);
@@ -164,18 +165,18 @@ $admin = User::where('email', 'admin@bookreader.com')->first();
 test('Admin user exists', $admin !== null);
 test('Admin role is correct', $admin->role === 'admin');
 test('Admin isAdmin() returns true', $admin->isAdmin());
-test('Regular user isAdmin() returns false', !$testUser->isAdmin());
+test('Regular user isAdmin() returns false', ! $testUser->isAdmin());
 
 // ==================== BOOK STATUS TESTS ====================
 echo "\n--- BOOK STATUS TESTS ---\n";
 
 $pendingBook = Book::create([
-  'title' => 'Pending Book',
-  'author' => 'Author',
-  'category_id' => $category->id,
-  'file_type' => 'pdf',
-  'status' => 'pending',
-  'created_by' => $testUser->id,
+    'title' => 'Pending Book',
+    'author' => 'Author',
+    'category_id' => $category->id,
+    'file_type' => 'pdf',
+    'status' => 'pending',
+    'created_by' => $testUser->id,
 ]);
 
 test('Book status is pending', $pendingBook->isPending());
@@ -207,7 +208,7 @@ $pendingBook->forceDelete();
 $testUser->cart()->delete();
 $testUser->collections()->delete();
 $testUser->preferences()->delete();
-$testUser->orders()->each(fn($o) => $o->items()->delete());
+$testUser->orders()->each(fn ($o) => $o->items()->delete());
 $testUser->orders()->delete();
 $testUser->forceDelete();
 
@@ -219,11 +220,11 @@ echo "  TEST SUMMARY\n";
 echo "========================================\n";
 echo "Passed: $passed\n";
 echo "Failed: $failed\n";
-echo "Total:  " . ($passed + $failed) . "\n";
+echo 'Total:  '.($passed + $failed)."\n";
 echo "========================================\n";
 
 if ($failed > 0) {
-  echo "❌ SOME TESTS FAILED!\n";
+    echo "❌ SOME TESTS FAILED!\n";
 } else {
-  echo "✅ ALL TESTS PASSED!\n";
+    echo "✅ ALL TESTS PASSED!\n";
 }

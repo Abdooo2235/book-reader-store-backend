@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-  public function up(): void
-  {
-    Schema::create('reading_progress', function (Blueprint $table) {
-      $table->id();
-      $table->foreignId('user_id')->constrained()->onDelete('cascade');
-      $table->foreignId('book_id')->constrained()->onDelete('cascade');
-      $table->decimal('progress_percentage', 5, 2)->default(0.00);
-      $table->integer('last_page')->default(0);
-      $table->timestamps();
+    public function up(): void
+    {
+        Schema::create('reading_progress', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
+            $table->decimal('progress_percentage', 5, 2)->default(0.00);
+            $table->integer('last_page')->default(0);
+            $table->timestamps();
 
-      $table->unique(['user_id', 'book_id']);
-    });
-  }
+            $table->unique(['user_id', 'book_id']);
+        });
+    }
 
-  public function down(): void
-  {
-    Schema::dropIfExists('reading_progress');
-  }
+    public function down(): void
+    {
+        Schema::dropIfExists('reading_progress');
+    }
 };

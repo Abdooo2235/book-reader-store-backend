@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -11,7 +12,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Book extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -67,17 +68,17 @@ class Book extends Model implements HasMedia
     // SCOPES
     // ============================================================================
 
-    public function scopeApproved($query)
+    public function scopeApproved(Builder $query)
     {
         return $query->where('status', 'approved');
     }
 
-    public function scopePending($query)
+    public function scopePending(Builder $query)
     {
         return $query->where('status', 'pending');
     }
 
-    public function scopeRejected($query)
+    public function scopeRejected(Builder $query)
     {
         return $query->where('status', 'rejected');
     }
@@ -203,8 +204,9 @@ class Book extends Model implements HasMedia
             if (str_starts_with($this->file_url, 'http://') || str_starts_with($this->file_url, 'https://')) {
                 return $this->file_url;
             }
+
             // Otherwise, treat as storage path
-            return asset('storage/' . $this->file_url);
+            return asset('storage/'.$this->file_url);
         }
 
         return null;

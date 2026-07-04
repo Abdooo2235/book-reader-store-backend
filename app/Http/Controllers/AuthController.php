@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         // Reload user with relationships (they are created in User::booted)
         $user->refresh();
-        $user->load(['cart', 'collections', 'preferences']);
+        $user->load(['collections', 'preferences']);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -51,14 +51,14 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($validated)) {
+        if (! Auth::attempt($validated)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.']
+                'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
         $user = User::where('email', $validated['email'])->firstOrFail();
-        $user->load(['cart.items.book', 'collections', 'preferences']);
+        $user->load(['collections', 'preferences']);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -77,7 +77,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Logged out successfully'
+            'message' => 'Logged out successfully',
         ]);
     }
 
@@ -87,11 +87,11 @@ class AuthController extends Controller
     public function user(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load(['cart.items.book', 'collections', 'preferences']);
+        $user->load(['collections', 'preferences']);
 
         return response()->json([
             'success' => true,
-            'data' => $user
+            'data' => $user,
         ]);
     }
 }
