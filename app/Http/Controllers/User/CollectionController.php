@@ -69,6 +69,9 @@ class CollectionController extends Controller
 
         $validated = $request->validate(['book_id' => 'required|exists:books,id']);
         $book = Book::find($validated['book_id']);
+        if (! $book) {
+            return response()->json(['success' => false, 'message' => 'Book not found.'], 404);
+        }
 
         // Book must be approved
         if (! $book->isApproved()) {

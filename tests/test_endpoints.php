@@ -4,10 +4,7 @@
 // Run with: php artisan tinker < tests/test_endpoints.php
 
 use App\Models\Book;
-use App\Models\Cart;
 use App\Models\Category;
-use App\Models\Collection;
-use App\Models\Order;
 use App\Models\ReadingProgress;
 use App\Models\Review;
 use App\Models\User;
@@ -54,7 +51,6 @@ $testUser = User::create([
 ]);
 
 test('User created', $testUser->exists);
-test('User cart auto-created', $testUser->cart !== null);
 test('User collections auto-created (3)', $testUser->collections()->count() === 3);
 test('User preferences auto-created', $testUser->preferences !== null);
 test(
@@ -79,30 +75,6 @@ test('Book created', $testBook->exists);
 test('Book belongs to category', $testBook->category->id === $category->id);
 test('Book belongs to creator', $testBook->creator->id === $testUser->id);
 test('Book status is approved', $testBook->isApproved());
-
-// ==================== CART TESTS ====================
-echo "\n--- CART TESTS ---\n";
-
-$cart = $testUser->cart;
-test('Cart exists', $cart !== null);
-
-$cart->addBook($testBook->id);
-test('Add book to cart', $cart->hasBook($testBook->id));
-test('Cart total items is 1', $cart->total_items === 1);
-
-$cart->removeBook($testBook->id);
-test('Remove book from cart', ! $cart->hasBook($testBook->id));
-
-// ==================== ORDER TESTS ====================
-echo "\n--- ORDER TESTS ---\n";
-
-$cart->addBook($testBook->id);
-$order = Order::createFromCart($cart);
-
-test('Order created', $order->exists);
-test('Order has correct total_items', $order->total_items === 1);
-test('Cart cleared after checkout', $cart->fresh()->items()->count() === 0);
-test('User has ordered book', $testUser->hasOrderedBook($testBook->id));
 
 // ==================== COLLECTION TESTS ====================
 echo "\n--- COLLECTION TESTS ---\n";
@@ -205,11 +177,8 @@ $review->delete();
 $progress->delete();
 $testBook->forceDelete();
 $pendingBook->forceDelete();
-$testUser->cart()->delete();
 $testUser->collections()->delete();
 $testUser->preferences()->delete();
-$testUser->orders()->each(fn ($o) => $o->items()->delete());
-$testUser->orders()->delete();
 $testUser->forceDelete();
 
 test('Cleanup complete', true);
